@@ -1,0 +1,37 @@
+[
+  {
+    "name": "home",
+    "page": "home.html"
+  },
+  {
+    "name": "new",
+    "page": "new.html"
+  },
+
+  {
+    "name": "idolzoom",
+    "children": [
+      {
+        "name": "aespa",
+        "children": [
+          {
+            "name": "winter drama",
+            "videoId": "iFLHVWLlnOQ" 
+          },
+          {
+            "name": "darina",
+            "videoId": "BxBLCc_R5Bw"
+          }
+        ]
+      },
+      {
+        "name": "learn",
+        "videolist": ["etiMil0_4Jw", "BuszZcWJ6as", "uiaeSeeIY3M"]
+      }
+    ]
+  },
+  {
+    "name": "about",
+    "page": "about.html"
+  }
+]
