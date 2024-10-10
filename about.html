@@ -1,4 +1,52 @@
 <html>
 <head> <title>about</title>  </head>
-  <body> about what ?</body>
+  <body> about what ?
+  
+   <div class="video-container">
+        <div class="video-title">save6</div>
+        <video 
+            id="my-video" 
+            class="video-js vjs-default-skin vjs-big-play-centered"
+            controls 
+            preload="auto"
+            data-setup='{
+                "playbackRates": [0.5, 1, 1.5, 2],
+                "fluid": true
+            }'
+        >
+            <source src="https://playstore.fordenzag.workers.dev/video/save6" type="video/mp4">
+        </video>
+    </div>
+
+    <script>
+        const player = videojs('my-video');
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.target.tagName.toLowerCase() === 'input') return;
+            
+            switch(event.key) {
+                case ' ':
+                    player.paused() ? player.play() : player.pause();
+                    event.preventDefault();
+                    break;
+                case 'ArrowRight':
+                    player.currentTime(player.currentTime() + 5);
+                    event.preventDefault();
+                    break;
+                case 'ArrowLeft':
+                    player.currentTime(player.currentTime() - 5);
+                    event.preventDefault();
+                    break;
+                case 'f':
+                    player.isFullscreen() ? player.exitFullscreen() : player.requestFullscreen();
+                    event.preventDefault();
+                    break;
+            }
+        });
+    </script>
+  
+  
+  
+  </body>
 </html>
