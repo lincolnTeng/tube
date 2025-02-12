@@ -7,6 +7,10 @@
     "name": "new",
     "page": "new.html"
   },
+  {
+    "name": "atube",
+    "page": "atube.html"
+  },
 
   {
     "name": "idolzoom",
