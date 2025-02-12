@@ -3,6 +3,30 @@
   <body> this is a tube 
    <a href="/atube/someid/"> atube someid </a>
     <a href="/atube/otherid/">atube othertube </a>
+<button onclick="playVideo('myVideoId')">play</button>
+<button onclick="downloadFile('myFileId')">dowwnload</button>
+
+<script>
+  async function playVideo(videoId) {
+    const response = await fetch(`/videoplay?id=${videoId}`);
+    const videoBlob = await response.blob();
+    const videoUrl = URL.createObjectURL(videoBlob);
+    videoPlayer.src = videoUrl;
+    videoPlayer.play();
+  }
+
+  async function downloadFile(fileId) {
+    const link = document.createElement('a');
+    link.href = `/videodown?id=${fileId}`;
+    link.download = 'video.mp4'; // 设置下载文件名
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+</script>
+
+
+    
   
   </body>
 </html>
