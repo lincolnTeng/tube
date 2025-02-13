@@ -1,10 +1,5 @@
 // functions/nav.js
 export async function onRequest(context) {
-    // 获取查询参数
-    const { searchParams } = new URL(context.request.url);
-    const action = searchParams.get('action'); // 'index' 或 'toggle'
-    const id = searchParams.get('id');         // 用于 toggle 动作
-
     const nav = [
         {
             "name": "home",
@@ -12,14 +7,31 @@ export async function onRequest(context) {
             "path": "home.html"
         },
         {
-            "name": "video",
-            "type": "video",
-            "path": "iFLHVWLlnOQ"
+            "name": "tube",
+            "type": "page",
+            "path": "tube.html"
         },
         {
-            "name": "playlist",
-            "type": "videolist",
-            "path": "etiMil0_4Jw,BuszZcWJ6as"
+            "name": "about",
+            "type": "page",
+            "path": "about.html"
+        },
+        
+        
+        {
+            "name": "video",
+            "children": [
+                {
+                    "name": "hotvideo",
+                    "type": "video",
+                    "path": "iFLHVWLlnOQ"
+                },
+                {
+                    "name": "list",
+                    "type": "videolist",
+                    "path": "etiMil0_4Jw,BuszZcWJ6as"
+                }
+            ]
         }
     ];
 
@@ -30,15 +42,21 @@ export async function onRequest(context) {
             const currentId = parentId ? `${parentId}-${index}` : `${index}`;
             
             html += '<li';
+            const classList = [];
             if (item.children) {
-                html += ` class="has-children" onclick="navonclick('${currentId}')"`;
+                classList.push('has-children');
+            }
+            if (classList.length) {
+                html += ` class="${classList.join(' ')}" data-id="${currentId}"`;
             }
             html += '>';
             
             if (item.type) {
+                // 内容节点
                 html += `<span onclick="gotoonclick('/${item.type}?path=${item.path}')">${item.name}</span>`;
             } else {
-                html += item.name;
+                // 目录节点
+                html += `<span onclick="navonclick('${currentId}')">${item.name}</span>`;
             }
             
             if (item.children) {
