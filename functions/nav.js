@@ -81,7 +81,7 @@ export async function onRequest(context) {
             
             if (item.type) {
                 // 内容节点
-                html += `<span onclick="gotoonclick('/${item.type}/${item.path}')">${item.name}</span>`;
+                html += `<span onclick="gotoonclick('/${item.type}?p=${item.path}')">${item.name}</span>`;
             } else {
                 // 目录节点
                 html += `<span onclick="navonclick('${currentId}')">${item.name}</span>`;
