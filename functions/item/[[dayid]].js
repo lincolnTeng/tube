@@ -1,6 +1,7 @@
 export async function onRequest(context) {
    const{timedir,vid} = context.params.dayid ;
-   re = "got id ["+ timedir+ "] and vid :[" + vid +"]" ;
+   re = "got id [ ${timedir} + ] and vid :[ + ${vid} +]" ;
+   /*
    const fetchre  = await fetch ( "/space/"+timedir+"/"+vid +".pjson" );
    const pjson = await fetchre.json();
    const { inf: { title, channel,upload_date,duration,view_count }, tracks }  = pjson ;
@@ -18,7 +19,7 @@ export async function onRequest(context) {
 
     re += "</div></div></div>" ; 
 
-   
+   */
     
 
    
