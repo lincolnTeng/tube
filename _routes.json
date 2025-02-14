@@ -2,6 +2,6 @@
 {
    "version": 1,
    "include": ["/*"],
-   "exclude": ["/static"]
+   "exclude": ["/static","/page","/space"]
 }
 
