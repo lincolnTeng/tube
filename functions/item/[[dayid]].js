@@ -4,7 +4,7 @@ export async function onRequest(context) {
    //  re = "this is a string " ; ` `;
    let re  = ` path is  ${timedir} to ${vid} .....  `;
 
-    re = ''' .video-profile {
+    re = " .video-profile {
     width: 500px;
     border: 2px solid #0d6efd;
     border-radius: 10px;
@@ -56,7 +56,7 @@ export async function onRequest(context) {
 .video-details i {
     font-size: 12px;
     margin-right: 4px;
-}  ''' ; 
+}  " ; 
 
 
    
