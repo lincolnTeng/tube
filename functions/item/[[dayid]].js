@@ -3,9 +3,9 @@ export async function onRequest(context) {
    const [timedir, vid]   = context.params.dayid ;
    //  re = "this is a string " ; ` `;
    let re  = ` path is  ${timedir} to ${vid} .....  `;
-   let fetchpath = `/space/${timedir}/${vid}.pjson`;
+   let fetchpath = `/space/${timedir}/${vid}.pjson`;/*
    const fetchre  = await fetch ( fetchpath );
-    const pjson = await fetchre.json();/*
+    const pjson = await fetchre.json();
    const { info , tracks }  = pjson ;
    const { title, channel,upload_date,duration,view_count } = info ;
     re += `<div class= 'video-profile'> ` ; 
