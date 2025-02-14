@@ -1,9 +1,9 @@
 export async function onRequest(context) {
 
-   const timedir = context.params.dayid ;
-   ti = JSON.stringify(timedir ) ;
+   const {timedir , vid }  = context.params.dayid ;
+  // ti = JSON.stringify(timedir ) ;
 //   const{timedir,vid} = context.params.dayid ;
-   re = "got id [ ${ti} + ] and vid :[ + {vid} +]" ;
+  // re = "got id [ ${ti} + ] and vid :[ + {vid} +]" ;
    /*
    const fetchre  = await fetch ( "/space/"+timedir+"/"+vid +".pjson" );
    const pjson = await fetchre.json();
@@ -27,7 +27,7 @@ export async function onRequest(context) {
 
    
     return new Response(
-        re , {
+         'this is a string ' , {
           headers: { 'Content-Type': 'text/html;charset=UTF-8' },
         }
     );
