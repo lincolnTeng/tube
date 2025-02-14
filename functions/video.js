@@ -1,6 +1,6 @@
 export async function onRequest(context) {
     const { searchParams } = new URL(context.request.url);
-    const videoId = searchParams.get('path');
+    const videoId = searchParams.get('p');
     
     const content = `
         <div class="video-container">
