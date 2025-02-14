@@ -12,9 +12,9 @@ export async function onRequest(context) {
             "path": "tube.html"
         },
         {
-            "name": "about",
+            "name": "info",
             "type": "page",
-            "path": "about.html"
+            "path": "info.html"
         },
         
         
@@ -32,7 +32,35 @@ export async function onRequest(context) {
                     "path": "etiMil0_4Jw,BuszZcWJ6as"
                 }
             ]
+        },
+
+
+        {
+            "name": "itemsample",
+            "children": [
+                {
+                    "name": "YvQiZqUOP1M",
+                    "type": "item",
+                    "path": "25021105/YvQiZqUOP1M"
+                },
+                {
+                    "name": "oEAis-uYTw8",
+                    "type": "item",
+                    "path": "25021020/oEAis-uYTw8"
+                }
+            ]
+        },
+
+
+        
+        {
+            "name": "about",
+            "type": "page",
+            "path": "about.html"
         }
+
+
+        
     ];
 
     function buildNavHtml(items, parentId = '') {
