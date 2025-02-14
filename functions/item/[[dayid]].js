@@ -1,6 +1,6 @@
 export async function onRequest(context) {
 
-   const {timedir , vid }  = context.params.dayid ;
+   const [timedir , vid ]  = context.params.dayid ;
    //  re = "this is a string " ;
    re = "path is ${timedir} and ${vid}" ;
    /*
