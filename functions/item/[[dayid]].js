@@ -1,8 +1,8 @@
 export async function onRequest(context) {
 
-   const timedir   = context.params.dayid ;
+   const [timedir, vid]   = context.params.dayid ;
    //  re = "this is a string " ;
-   re = "path is ${timedir[0]} and ${timedir[1]}" ;
+   let re  = "path is ${timedir} and ${vid}" ;
    /*
    const fetchre  = await fetch ( "/space/${timedir}/${vid}.pjson" );
     const pjson = await fetchre.json();
@@ -26,7 +26,7 @@ export async function onRequest(context) {
 
    
     return new Response(
-         "thi sis a string " , {
+         re , {
           headers: { 'Content-Type': 'text/html;charset=UTF-8' },
         }
     );
