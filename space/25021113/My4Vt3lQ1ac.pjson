@@ -1,0 +1,41 @@
+{
+  "info": {
+    "title": "(\uc5ec\uc790)\uc544\uc774\ub4e4 \uc804\uc6d0 \uc7ac\uacc4\uc57d \ubc1c\ud45c \uc5d0\uc2a4\ud30c & \uc544\uc774\ube0c aespa & IVE Reaction (G)I-DLE 2024 MMA \uc62c\ud574\uc758 \ub808\ucf54\ub4dc \ub300\uc0c1 \uc218\uc0c1\uc18c\uac10",
+    "channel": "Spinel CAM",
+    "upload_date": "20241202",
+    "duration": 295,
+    "view_count": 37298
+  },
+  "tracks": {
+    "paudio": {
+      "format_id": "140",
+      "ext": "m4a",
+      "filesize": "4.55 MB",
+      "codec": "mp4a.40.2"
+    },
+    "p720": {
+      "format_id": "136",
+      "ext": "mp4",
+      "filesize": "74.88 MB",
+      "codec": "avc1.64001f"
+    },
+    "p1080": {
+      "format_id": "299",
+      "ext": "mp4",
+      "filesize": "204.98 MB",
+      "codec": "avc1.64002a"
+    },
+    "p1440": {
+      "format_id": "623",
+      "ext": "mp4",
+      "filesize": "N/A",
+      "codec": "vp09.00.50.08"
+    },
+    "p2160": {
+      "format_id": "628",
+      "ext": "mp4",
+      "filesize": "N/A",
+      "codec": "vp09.00.51.08"
+    }
+  }
+}
