@@ -13,15 +13,16 @@ export async function onRequest(context) {
 
     re += ` <div class= 'video-info'>` ; 
     re += ` <h6 class= 'video-title'> ${title}  </h6>` ; 
-    re += " <div class='video-details' > " ; /*
-    re += " <span class='vviews'> <i class='bi bi-broadcast'> </i> {$inf['channel']}</span>" ;
-    re += " <span class='vviews'> <i class='bi bi-eye'> </i> {$inf['view_count']}</span>"; 
-    re += " <span class='vviews'> <i class='bi bi-clock'> </i> {$inf['duration']}</span>"; 
-    re += " <span class='vviews'> <i class='bi bi-calendar'> </i> {$inf['upload_date']}</span>" ; 
+    re += ` <div class='video-details' > `; 
+   
+    re += ` <span class='vviews'> <i class='bi bi-broadcast'> </i> ${channel}</span>` ;
+    re += ` <span class='vviews'> <i class='bi bi-eye'> </i> ${view_count}</span>`; 
+    re += ` <span class='vviews'> <i class='bi bi-clock'> </i> ${duration}</span>`; 
+    re += ` <span class='vviews'> <i class='bi bi-calendar'> </i> ${upload_date}</span>` ; 
 
-    re += "</div></div></div>" ; 
+    re += `</div></div></div>` ; 
 
-   */
+   
     
 
    
