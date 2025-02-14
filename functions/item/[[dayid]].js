@@ -9,12 +9,12 @@ export async function onRequest(context) {
     re += " <div class= 'video-thumb'> <span >thunb </span></div> " ; 
 
     re += " <div class= 'video-info'>" ; 
-    re += f" <h6 class= 'video-title'> ${inf['title']}  </h6>" ; 
+    re += " <h6 class= 'video-title'> ${inf['title']}  </h6>" ; 
     re += " <div class='video-details' > " ; 
-    re += f" <span class='vviews'> <i class='bi bi-broadcast'> </i> {$inf['channel']}</span>" ;
-    re += f" <span class='vviews'> <i class='bi bi-eye'> </i> {$inf['view_count']}</span>"; 
-    re += f" <span class='vviews'> <i class='bi bi-clock'> </i> {$inf['duration']}</span>"; 
-    re += f" <span class='vviews'> <i class='bi bi-calendar'> </i> {$inf['upload_date']}</span>" ; 
+    re += " <span class='vviews'> <i class='bi bi-broadcast'> </i> {$inf['channel']}</span>" ;
+    re += " <span class='vviews'> <i class='bi bi-eye'> </i> {$inf['view_count']}</span>"; 
+    re += " <span class='vviews'> <i class='bi bi-clock'> </i> {$inf['duration']}</span>"; 
+    re += " <span class='vviews'> <i class='bi bi-calendar'> </i> {$inf['upload_date']}</span>" ; 
 
     re += "</div></div></div>" ; 
 
