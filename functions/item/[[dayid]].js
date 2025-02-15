@@ -4,8 +4,8 @@ export async function onRequest(context) {
    //  re = "this is a string " ; ` `;
    let re  = ` `;
 
-     re +=   `  <div class="panel-heading border"> `;
-     re +=  `    <h4 class="panel-title bg-secondary">  ${timedir}||${vid} </h4>  </div>`; 
+     re += ` <div class="panel-heading col-md-6 border"> `;
+     re += ` <h6 class="panel-title bg-secondary"> ${timedir}||${vid} </h6> </div>`; 
 
    
    let fetchpath = `https://tube.bayx.uk/space/${timedir}/${vid}.pjson`;
