@@ -12,7 +12,7 @@ export async function onRequest(context) {
    const { info , tracks }  = pjson ;
    const { title, channel,upload_date,duration,view_count } = info ;
 
-    re += ` <div class="col-md-5"><iframe src = "https://www.youtube.com/embed/${vid}?width=600&height=320" allowfullscreen> `;
+    re += ` <div class="col-md-6"><iframe src = "https://www.youtube.com/embed/${vid}?width=600" allowfullscreen> `;
    
     re += `</iframe> </div>`;   
    
