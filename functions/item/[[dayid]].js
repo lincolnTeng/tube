@@ -13,7 +13,7 @@ export async function onRequest(context) {
    const { title, channel,upload_date,duration,view_count } = info ;
     re += `<div class= 'video-profile'> ` ; 
  
-    re += ` <div class="row"><iframe src = "https://www.youtube.com/embed/${vid}?width=500&height=300" allowfullscreen> `;
+    re += ` <div class="col-md-5"><iframe src = "https://www.youtube.com/embed/${vid}?width=500&height=300" allowfullscreen> `;
    
     re += `</iframe> </div>`;
     re += ` <div class= 'video-thumb'> <span >thunb </span></div> ` ; 
