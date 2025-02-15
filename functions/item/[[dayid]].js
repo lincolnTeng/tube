@@ -2,8 +2,10 @@ export async function onRequest(context) {
 
    const [timedir, vid]   = context.params.dayid ;
    //  re = "this is a string " ; ` `;
-   let re  = ` path is  ${timedir} to ${vid} .....  `;
+   let re  = ` `;
 
+     re +=   `  <div class="panel-heading border"> `;
+     re +=  `    <h4 class="panel-title bg-secondary">  ${timedir}||${vid} </h4>  </div>`; 
 
    
    let fetchpath = `https://tube.bayx.uk/space/${timedir}/${vid}.pjson`;
