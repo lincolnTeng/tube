@@ -5,7 +5,7 @@ export async function onRequestGet({ request, env }) {
   const code = searchParams.get('code');
   
   if (!code) {
-    return new Response('认证失败', { status: 400 });
+    return new Response('auth failor!', { status: 400 });
   }
 
   try {
