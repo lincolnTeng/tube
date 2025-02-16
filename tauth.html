@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简化版认证示例</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- 认证状态区域 -->
+        <div id="auth-status" class="mb-8 p-4 bg-white rounded-lg shadow">
+            <div id="user-info" class="hidden">
+                <div class="flex items-center justify-between">
+                    <p>已登录</p>
+                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                        退出登录
+                    </button>
+                </div>
+            </div>
+            <div id="login-prompt" class="text-center">
+                <button onclick="handleLogin()" class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    登录
+                </button>
+            </div>
+        </div>
+
+        <!-- 受保护内容区域 -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">受保护内容</h2>
+            <button onclick="fetchProtectedContent()" class="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                获取内容
+            </button>
+            <div id="content" class="border p-4 rounded min-h-[100px]">
+                点击按钮获取内容
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查URL参数中的token
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        if (token) {
+            // 清除URL中的token并保存到localStorage
+            window.history.replaceState({}, document.title, window.location.pathname);
+            localStorage.setItem('sessionToken', token);
+            updateAuthUI(true);
+        } else {
+            // 检查localStorage中的token
+            const savedToken = localStorage.getItem('sessionToken');
+            updateAuthUI(!!savedToken);
+        }
+
+        function updateAuthUI(isLoggedIn) {
+            document.getElementById('user-info').classList.toggle('hidden', !isLoggedIn);
+            document.getElementById('login-prompt').classList.toggle('hidden', isLoggedIn);
+        }
+
+        function handleLogin() {
+            // 重定向到后端的登录初始化端点
+            window.location.href = '/auth/google-init';
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('sessionToken');
+            updateAuthUI(false);
+            document.getElementById('content').textContent = '点击按钮获取内容';
+        }
+
+        async function fetchProtectedContent() {
+            const sessionToken = localStorage.getItem('sessionToken');
+            if (!sessionToken) {
+                document.getElementById('content').textContent = '请先登录';
+                return;
+            }
+
+            try {
+                const response = await fetch('/private/content', {
+                    headers: {
+                        'Authorization': `Bearer ${sessionToken}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    localStorage.removeItem('sessionToken');
+                    updateAuthUI(false);
+                    document.getElementById('content').textContent = '登录已过期，请重新登录';
+                    return;
+                }
+
+                const content = await response.text();
+                document.getElementById('content').innerHTML = content;
+            } catch (error) {
+                console.error('Error fetching content:', error);
+                document.getElementById('content').textContent = '获取内容失败，请重试';
+            }
+        }
+    </script>
+</body>
+</html>
