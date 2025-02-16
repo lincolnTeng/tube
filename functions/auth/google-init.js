@@ -6,8 +6,8 @@ export async function onRequestGet({ env }) {
   
   // 构建Google OAuth URL
   const googleAuthUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-  googleAuthUrl.searchParams.set('client_id', env.GOOGLE_CLIENT_ID);
-  googleAuthUrl.searchParams.set('redirect_uri', env.AUTH_REDIRECT_URI);
+  googleAuthUrl.searchParams.set('client_id', '243856497037-kvq6jjaggqqq2lrcbb9tm4plk14408pd.apps.googleusercontent.com');
+  googleAuthUrl.searchParams.set('redirect_uri', 'https://tube.bayx.uk/auth/callback');
   googleAuthUrl.searchParams.set('response_type', 'code');
   googleAuthUrl.searchParams.set('scope', 'email profile');
   googleAuthUrl.searchParams.set('state', state);
