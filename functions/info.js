@@ -25,7 +25,7 @@ export async function onRequest(context) {
 
         }
        pcode = ws + '@' + vid + '@if' ;
-       let fetchre = await  fetch('http://148.135.115.48/pool/prof/'+pcode ) ; 
+       let fetchre = await  fetch('http://pool.bayx.uk/pool/prof/'+pcode ) ; 
        let re = await fetchre.text();
        return new Response(
          re , {  headers: { 'Content-Type': 'text/html;charset=UTF-8' },    }
