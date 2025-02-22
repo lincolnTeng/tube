@@ -24,7 +24,7 @@ export async function onRequest(context) {
 
 
         }
-       pcode = ws + '@' + vid + '@if' ;
+       pcode = ws + '@' + vid + '@i' ;
        let fetchre = await  fetch('http://pool.bayx.uk/pyapp/pool/prof/'+pcode ) ; 
        let re = await fetchre.text();
        return new Response(
