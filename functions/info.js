@@ -8,8 +8,8 @@ export async function onRequest(context) {
   try {
     
       if( vurl .includes( 'youtube.com/')  ) {
-              strspl  = vurl.split('youtube.com/') ;
-              pubturl = strspl[1]  ;
+              let strspl  = vurl.split('youtube.com/') ;
+              let pubturl = strspl[1]  ;
 
               if( pubturl .includes('watch?v=' ) ) {
                   vid = pubturl.split('watch?v=')[1] ;
@@ -25,7 +25,7 @@ export async function onRequest(context) {
 
         }
        pcode = ws + '@' + vid + '@if' ;
-       re = await  fetch('http://148.135.115.48/pool/prof/'+pcode ) ; 
+       let re = await  fetch('http://148.135.115.48/pool/prof/'+pcode ) ; 
           
        return new Response(
          re , {  headers: { 'Content-Type': 'text/html;charset=UTF-8' },    }
