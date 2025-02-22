@@ -1,12 +1,11 @@
 export async function onRequest(context) {
   let ws ='w' ;
-  let vid ;
+  let vid = 'xxx' ;
+  let pcode = 'yyy' ;
   const formData = await context.request.json()  ;
   const vurl = formData.videourl ; //  vurl 
   
   try {
-
- 
     
       if( vurl .includes( 'youtube.com/')  ) {
               strspl  = vurl.split('youtube.com/') ;
@@ -25,8 +24,8 @@ export async function onRequest(context) {
 
 
         }
-      
-       re = await  fetch('http://148.135.115.48/pool/prof/'+ ws+'@'+vid+'@if') ; 
+       pcode = ws + '@' + vid + '@if' ;
+       re = await  fetch('http://148.135.115.48/pool/prof/'+pcode ) ; 
           
        return new Response(
          re , {  headers: { 'Content-Type': 'text/html;charset=UTF-8' },    }
@@ -35,7 +34,8 @@ export async function onRequest(context) {
   
     } catch (error) {
     //  console.error('Error parsing FormData:', error);
-      return new Response(JSON.stringify({ error: 'Failed to parse form data ','vurl': vurl   }), {
+      return new Response(JSON.stringify({ error: 'Failed to parse form data ','vurl': vurl ,
+        'pcode':pcode , 'ws':ws, 'vid': vid                                 }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
