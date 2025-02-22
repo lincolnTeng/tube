@@ -24,7 +24,11 @@ export async function onRequest(context) {
         }
       
        re = await  fetch('http://148.135.115.48/pool/prof/'+ ws+'@'+vid+'@if' ; 
-      return re ;
+          
+       return new Response(
+         re , {  headers: { 'Content-Type': 'text/html;charset=UTF-8' },    }
+       );
+
   
     } catch (error) {
     //  console.error('Error parsing FormData:', error);
@@ -36,23 +40,5 @@ export async function onRequest(context) {
   } else {
     return new Response('Method Not Allowed', { status: 405 });
   }
-  
-
-
-  
-    const { searchParams } = new URL(context.request.url);
-    const videoId = searchParams.get('p');
     
-    const content = `
-        <div class="video-container">
-            <iframe 
-                src="https://www.youtube.com/embed/${videoId}"
-                allowfullscreen>
-            </iframe>
-        </div>
-    `;
-    
-    return new Response(content, {
-        headers: { 'Content-Type': 'text/html;charset=UTF-8' },
-    });
 }
