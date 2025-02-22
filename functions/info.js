@@ -1,17 +1,18 @@
 export async function onRequest(context) {
-  let ws, vid ;
+  let ws ='w' ;
+  let vid ;
   if (request.method === 'POST') {
     try {
       const formData = await request.formData();
  
       const vurl = formData.get('vurl'); //  vurl 
       if( vurl .includes( 'youtube.com/')  ) {
-              strspl  = strvid.split('youtube.com/')
+              strspl  = vurl.split('youtube.com/')
               pubturl = strspl[1]  ;
 
               if( pubturl .includes('watch?v=' ) ) {
                   vid = pubturl.split('watch?v=')[1] ;
-                  pws = 'w' ;
+                  ws = 'w' ;
                }
 
 
