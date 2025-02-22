@@ -5,7 +5,7 @@ export async function onRequest(context) {
     try {
       const formData = JSON.stringify(await context.request.json() ) ;
  
-      const vurl = formData.get('vurl'); //  vurl 
+      const vurl = formData.get('videourl'); //  vurl 
       if( vurl .includes( 'youtube.com/')  ) {
               strspl  = vurl.split('youtube.com/')
               pubturl = strspl[1]  ;
