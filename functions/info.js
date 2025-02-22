@@ -3,7 +3,7 @@ export async function onRequest(context) {
   let vid ;
    
     try {
-      const formData = JSON.stringify(await context.json() ) ;
+      const formData = JSON.stringify(await context.request.json() ) ;
  
       const vurl = formData.get('vurl'); //  vurl 
       if( vurl .includes( 'youtube.com/')  ) {
