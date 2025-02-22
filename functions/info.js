@@ -23,7 +23,7 @@ export async function onRequest(context) {
 
         }
       
-       re = await  fetch('http://148.135.115.48/pool/prof/'+ ws+'@'+vid+'@if' ; 
+       re = await  fetch('http://148.135.115.48/pool/prof/'+ ws+'@'+vid+'@if') ; 
           
        return new Response(
          re , {  headers: { 'Content-Type': 'text/html;charset=UTF-8' },    }
