@@ -1,9 +1,9 @@
 export async function onRequest(context) {
   let ws ='w' ;
   let vid ;
-  if (context.method === 'POST') {
+   
     try {
-      const formData = await context.formData();
+      const formData = JSON.stringify(await context.json() ) ;
  
       const vurl = formData.get('vurl'); //  vurl 
       if( vurl .includes( 'youtube.com/')  ) {
@@ -38,8 +38,5 @@ export async function onRequest(context) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-  } else {
-    return new Response('Method Not Allowed', { status: 405 });
-  }
-    
+     
 }
