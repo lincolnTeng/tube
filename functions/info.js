@@ -1,9 +1,9 @@
 export async function onRequest(context) {
   let ws ='w' ;
   let vid ;
-  if (request.method === 'POST') {
+  if (context.method === 'POST') {
     try {
-      const formData = await request.formData();
+      const formData = await context.formData();
  
       const vurl = formData.get('vurl'); //  vurl 
       if( vurl .includes( 'youtube.com/')  ) {
