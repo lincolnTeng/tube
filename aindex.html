@@ -180,7 +180,7 @@
         const outputid = element.dataset.outputid ; 
         const fpath = element.dataset.fpath ;
         const inputvalue = document.getElementById(inputid).value ;
-        const formData = { `${inputid}` : inputvalue } ;
+        const formData = { [inputid] : inputvalue } ;
         const baseurl = "https://tube.bayx.uk" ;
         
         const response = await fetch( baseurl+fpath , {    method: 'POST',    
