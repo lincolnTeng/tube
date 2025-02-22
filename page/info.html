@@ -8,7 +8,7 @@
                 <div class="download-form mb-4">
                     <div class="input-group" >
                         <input type="text" id='videourl' class="form-control form-control-sm" placeholder="Paste video URL here...">
-                        <button data-gotoid='videourl' class="btn btn-primary btn-sm" onclick="gotobtn()">download info </button>
+                        <button data-inputid='videourl' data-outputid='profdiv' data-fpath='/info/prof' class="btn btn-primary btn-sm" onclick="gotobtn()">download info </button>
                     </div>
                 </div>
 
@@ -18,6 +18,8 @@
                     <span class="badge bg-light text-dark">✓ Creator Friendly</span>
                     <span class="badge bg-light text-dark">✓ High Quality</span>
                 </div>
+               <div id='profdiv'> class="d-flex justify-content-center gap-3">
+               </div>
             </div>
         </div>
   
