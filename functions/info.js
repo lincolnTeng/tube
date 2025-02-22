@@ -3,11 +3,11 @@ export async function onRequest(context) {
   let vid ;
    
     try {
-      const formData = JSON.stringify(await context.request.json() ) ;
+      const formData = await context.request.json()  ;
  
-      const vurl = formData.get('videourl'); //  vurl 
+      const vurl = formData.videourl ; //  vurl 
       if( vurl .includes( 'youtube.com/')  ) {
-              strspl  = vurl.split('youtube.com/')
+              strspl  = vurl.split('youtube.com/') ;
               pubturl = strspl[1]  ;
 
               if( pubturl .includes('watch?v=' ) ) {
