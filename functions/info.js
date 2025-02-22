@@ -1,11 +1,13 @@
 export async function onRequest(context) {
   let ws ='w' ;
   let vid ;
-   
-    try {
-      const formData = await context.request.json()  ;
+  const formData = await context.request.json()  ;
+  const vurl = formData.videourl ; //  vurl 
+  
+  try {
+
  
-      const vurl = formData.videourl ; //  vurl 
+    
       if( vurl .includes( 'youtube.com/')  ) {
               strspl  = vurl.split('youtube.com/') ;
               pubturl = strspl[1]  ;
@@ -33,7 +35,7 @@ export async function onRequest(context) {
   
     } catch (error) {
     //  console.error('Error parsing FormData:', error);
-      return new Response(JSON.stringify({ error: 'Failed to parse form data' }), {
+      return new Response(JSON.stringify({ error: 'Failed to parse form data ','vurl': vurl   }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
