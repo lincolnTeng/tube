@@ -9,11 +9,11 @@ export async function onRequest(context) {
     
        if( fetchre.ok ) 
            listjson = await fetchre.json() ;
-       else 
+       else {
            return new Response( `bad list fetch ${listid}`, {
                     headers: { 'Content-Type': 'text/html;charset=UTF-8' },
             });
-        
+       }
        //   listjson = { "title":"sometitle", "items":[ {"id":"id1"} , {"id":"id2"} ] } ;
       let re = `<div>   <div> list title : ${listjson["title"]} </div>` ;
 
