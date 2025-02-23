@@ -19,8 +19,9 @@ export async function onRequest(context) {
       let re = `<div>   <div> list title : ${listjson["title"]} </div>` ;
 
       for (const item of listjson.items) {
-       
-          re += `<div id="${item['id']}" > <script > re = await fetch("/item/${item['id']}"); pr= await re.json();  print( pr );</script> </div> ` ; 
+          let fi = await fetch(`https://tube.bayx.uk/item/${item['path']}/${item['id']}`) ;
+          let itemdiv = await fi.json() ;
+          re += `<div id="${item['id']}" > ${itemdiv}   </div> ` ; 
       
       } ; 
     
