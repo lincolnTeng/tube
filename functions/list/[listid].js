@@ -1,7 +1,7 @@
 export async function onRequest(context) {
        const listid   = context.params.listid ;
        const fetchre = await fetch( `https://tube.bayx.uk/data/${listid}.list`) ; 
-       const listjson ={} ; 
+       let listjson ={} ; 
     
        if( fetchre.ok ) 
            listjson = fetchre.json() ;
