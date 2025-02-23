@@ -1,7 +1,7 @@
 export async function onRequest(context) {
        const listid   = context.params.listid ;
        const fetchre = await fetch( `https://tube.bayx.uk/data/${listid}.list`) ; 
-       const listjson ; 
+       const listjson ={} ; 
     
        if( fetchre.ok ) 
            listjson = fetchre.json() ;
@@ -13,7 +13,7 @@ export async function onRequest(context) {
 
       for (const item of listjson.items) {
        
-          re + = `<div id="${item.id}" > <script > re = await fetch("/item/${item.id}"); pr= await re.json();  print( pr );</script> </div> ` ; 
+          re += `<div id="${item.id}" > <script > re = await fetch("/item/${item.id}"); pr= await re.json();  print( pr );</script> </div> ` ; 
       
       } ; 
     
