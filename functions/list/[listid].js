@@ -4,7 +4,7 @@ export async function onRequest(context) {
        let listjson ={} ; 
     
        if( fetchre.ok ) 
-           listjson = fetchre.json() ;
+           listjson = await fetchre.json() ;
        else 
            return new Response( `bad list fetch ${listid}`, {
                     headers: { 'Content-Type': 'text/html;charset=UTF-8' },
