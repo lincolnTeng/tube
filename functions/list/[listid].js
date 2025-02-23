@@ -2,7 +2,8 @@ export async function onRequest(context) {
        const listid   = context.params.listid ;
        let listjson ={} ;  
    try{
-       const fetchre = await fetch( `https://tube.bayx.uk/data/${listid}.list`) ; 
+       const p = "https://tube.bayx.uk/data/"+${listid} +".list";
+       const fetchre = await fetch( p ) ; 
 
     
        if( fetchre.ok ) 
@@ -13,11 +14,11 @@ export async function onRequest(context) {
             });
         
        //   listjson = { "title":"sometitle", "items":[ {"id":"id1"} , {"id":"id2"} ] } ;
-      let re = `<div>   <div> list title : ${listjson.title} </div>` ;
+      let re = `<div>   <div> list title : ${listjson["title"]} </div>` ;
 
       for (const item of listjson.items) {
        
-          re += `<div id="${item.id}" > <script > re = await fetch("/item/${item.id}"); pr= await re.json();  print( pr );</script> </div> ` ; 
+          re += `<div id="${item['id']}" > <script > re = await fetch("/item/${item['id']}"); pr= await re.json();  print( pr );</script> </div> ` ; 
       
       } ; 
     
