@@ -33,6 +33,21 @@ export async function onRequest(context) {
                 }
             ]
         },
+        {
+            "name": "list",
+            "children": [
+                {
+                    "name": "kpoplistA",
+                    "type": "list",
+                    "path": "lista"
+                },
+                {
+                    "name": "listb",
+                    "type": "list",
+                    "path": "listb"
+                }
+            ]
+        },
 
 
         {
