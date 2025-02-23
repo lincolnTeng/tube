@@ -1,7 +1,9 @@
-{ "title":"a some good list title",
+{
+ "title":"a some good list title",
+
  "items":[
-   {"id":My4Vt3lQ1ac, title:"item title1" },
-   {"id":MN2RlOy8y8k, title:"item title2" }
- ]
+   {"id":"My4Vt3lQ1ac", title:"item title1" },
+   {"id":"MN2RlOy8y8k", title:"item title2" }
+  ]
  
 }
