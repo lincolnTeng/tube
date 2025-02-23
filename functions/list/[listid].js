@@ -23,7 +23,7 @@ export async function onRequest(context) {
           let itemdiv = await fi.text() ;
           re += `<div id="${item['id']}" > ${itemdiv}   </div> ` ; 
          //  <iframe src="your-iframe-content.html" id="myIframe"></iframe>
-          re += `<div id="inframe${item['id']}"> <iframe src="/${item['path']}/${item['id']}"> </iframe></div> ` ; 
+          re += `<div id="inframe${item['id']}"> <iframe src="/item/${item['path']}/${item['id']}"> </iframe></div> ` ; 
       
       } ; 
     
