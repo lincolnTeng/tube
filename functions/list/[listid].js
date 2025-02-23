@@ -1,8 +1,9 @@
 export async function onRequest(context) {
        const listid   = context.params.listid ;
        let listjson ={} ;  
-   try{
        const p = "https://tube.bayx.uk/data/"+listid +".list";
+   try{
+   
        const fetchre = await fetch( p ) ; 
 
     
@@ -29,7 +30,7 @@ export async function onRequest(context) {
 
  } catch (error) {
     //  console.error('Error parsing FormData:', error);
-      return new Response(JSON.stringify({ error: 'Failed to parse form data ', 'listid':listid, 'listjson': listjson  }), {
+      return new Response(JSON.stringify({ error: 'Failed to parse form data ', 'p':p,'listid':listid, 'listjson': listjson  }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
