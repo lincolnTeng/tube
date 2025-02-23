@@ -7,8 +7,9 @@ export async function onRequest(context) {
        const fetchre = await fetch( p ) ; 
 
     
-       if( fetchre.ok ) 
+       if( fetchre.ok ) {
            listjson = await fetchre.json() ;
+       }
        else {
            return new Response( `bad list fetch ${listid}`, {
                     headers: { 'Content-Type': 'text/html;charset=UTF-8' },
