@@ -22,6 +22,8 @@ export async function onRequest(context) {
           let fi = await fetch(`https://tube.bayx.uk/item/${item['path']}/${item['id']}`) ;
           let itemdiv = await fi.text() ;
           re += `<div id="${item['id']}" > ${itemdiv}   </div> ` ; 
+         //  <iframe src="your-iframe-content.html" id="myIframe"></iframe>
+          re += `<div id="inframe${item['id']}"> <iframe src="/${item['path']}/${item['id']}"> </iframe></div> ` ; 
       
       } ; 
     
