@@ -2,7 +2,7 @@ export async function onRequest(context) {
        const listid   = context.params.listid ;
        let listjson ={} ;  
    try{
-       const p = "https://tube.bayx.uk/data/"+${listid} +".list";
+       const p = "https://tube.bayx.uk/data/"+listid +".list";
        const fetchre = await fetch( p ) ; 
 
     
