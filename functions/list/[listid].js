@@ -20,7 +20,7 @@ export async function onRequest(context) {
 
       for (const item of listjson.items) {
           let fi = await fetch(`https://tube.bayx.uk/item/${item['path']}/${item['id']}`) ;
-          let itemdiv = await fi.json() ;
+          let itemdiv = await fi.text() ;
           re += `<div id="${item['id']}" > ${itemdiv}   </div> ` ; 
       
       } ; 
