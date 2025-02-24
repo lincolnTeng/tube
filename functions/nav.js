@@ -42,9 +42,9 @@ export async function onRequest(context) {
                     "path": "lista"
                 },
                 {
-                    "name": "listb",
+                    "name": "250224 list ",
                     "type": "list",
-                    "path": "listb"
+                    "path": "list250224"
                 }
             ]
         },
