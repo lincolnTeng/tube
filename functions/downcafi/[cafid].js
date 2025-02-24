@@ -5,7 +5,7 @@ export async function onRequest(context) {
   try {
     const obj = await bucket.get(videoKey);
     if (!obj) {
-      return new Response('Video not found', { status: 404 });
+      return new Response('Video not found ,key:'+videoKey, { status: 404 });
     }
 
     // Get the range header if it exists
