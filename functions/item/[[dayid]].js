@@ -23,7 +23,7 @@ export async function onRequest(context) {
    re += `<div class= 'video-profile col-md-4'> ` ; 
  
 
-    re += ` <div class= 'video-thumb'> <span >thunb </span></div> ` ; 
+    re += ` <div class= 'video-thumb'> <span >thumb(n/a) </span></div> ` ; 
 
     re += ` <div class= 'video-info'>` ; 
     re += ` <h6 class= 'video-title'> ${title}  </h6>` ; 
