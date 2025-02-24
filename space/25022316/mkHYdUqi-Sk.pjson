@@ -1,0 +1,41 @@
+{
+  "info": {
+    "title": "LE SSERAFIM (\ub974\uc138\ub77c\ud54c) 'HOT' CONCEPT FILM - TANNED GUAIAC",
+    "channel": "HYBE LABELS",
+    "upload_date": "20250223",
+    "duration": 19,
+    "view_count": 71798
+  },
+  "tracks": {
+    "paudio": {
+      "format_id": "140",
+      "ext": "m4a",
+      "filesize": "294.34 KB",
+      "codec": "mp4a.40.2"
+    },
+    "p720": {
+      "format_id": "136",
+      "ext": "mp4",
+      "filesize": "1.95 MB",
+      "codec": "avc1.4d401f"
+    },
+    "p1080": {
+      "format_id": "137",
+      "ext": "mp4",
+      "filesize": "8.66 MB",
+      "codec": "avc1.640028"
+    },
+    "p1440": {
+      "format_id": "620",
+      "ext": "mp4",
+      "filesize": "N/A",
+      "codec": "vp09.00.50.08"
+    },
+    "p2160": {
+      "format_id": "625",
+      "ext": "mp4",
+      "filesize": "N/A",
+      "codec": "vp09.00.50.08"
+    }
+  }
+}
