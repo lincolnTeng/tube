@@ -16,7 +16,7 @@ export async function onRequest(context) {
 
     re += ` <div class="col-md-2">`;
          
-    re += `<a href="/downcafi/${fid}" download="${fid}"> `;
+    re += `<a href="/downcafi${fid}" download="${fid}"> `;
     re += `<span  class="badge bg-info">${track}</span></a>`;
     re += `</div>` ;    
     return new Response(
