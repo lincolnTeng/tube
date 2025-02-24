@@ -1,7 +1,7 @@
 export async function onRequest(context) {
   
   let videoKey = context.params.cafid ; 
-  let bucket = context.env.bucket;
+  let bucket = context.env.tubespace;
   try {
     const obj = await bucket.get(videoKey);
     if (!obj) {
