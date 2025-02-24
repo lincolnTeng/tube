@@ -49,6 +49,30 @@ export async function onRequest(context) {
             ]
         },
 
+        {
+            "name": "cachefile",
+            "children": [
+   
+                {
+                    "name": "Ka0lrsRIGvI",
+                    "type": "cafi",
+                    "path": "25022411/Ka0lrsRIGvI"
+                },
+                {
+                    "name": "mkHYdUqi-Sk",
+                    "type": "cafi",
+                    "path": "25022316/mkHYdUqi-Sk"
+                },
+
+
+                {
+                    "name": "IS3002WJ0us",
+                    "type": "cafi",
+                    "path": "25021918/IS3002WJ0us"
+                }
+            ]
+        },
+
 
         {
             "name": "itemsample",
