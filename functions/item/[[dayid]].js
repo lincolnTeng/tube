@@ -4,7 +4,7 @@ export async function onRequest(context) {
    //  re = "this is a string " ; ` `;
    let re  = ` `;
 
-     re += ` <div class="panel-heading col-md-6 border"> `;
+     re += ` <div class="panel-heading  "> `;
      re += ` <h6 class="panel-title bg-secondary"> ${timedir}||${vid} </h6> </div>`; 
 
    
@@ -14,11 +14,11 @@ export async function onRequest(context) {
    const { info , tracks }  = pjson ;
    const { title, channel,upload_date,duration,view_count } = info ;
 
-    re += ` <div class="col-md-4"><iframe src = "https://www.youtube.com/embed/${vid}?width=400" allowfullscreen> `;
+    re += ` <div class="row"><div class="col-md-4"><iframe src = "https://www.youtube.com/embed/${vid}?width=300" allowfullscreen> `;
    
     re += `</iframe> </div>`;   
    
-   re += `<div class= 'video-profile'> ` ; 
+   re += `<div class= 'video-profile col-md-4'> ` ; 
  
 
     re += ` <div class= 'video-thumb'> <span >thunb </span></div> ` ; 
@@ -32,7 +32,7 @@ export async function onRequest(context) {
     re += ` <span class='vviews'> <i class='bi bi-clock'> </i> ${duration}</span>`; 
     re += ` <span class='vviews'> <i class='bi bi-calendar'> </i> ${upload_date}</span>` ; 
 
-    re += `</div></div></div>` ; 
+    re += `</div></div></div></div>` ; 
 
    
     
