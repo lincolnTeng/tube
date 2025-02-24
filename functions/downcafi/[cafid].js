@@ -1,44 +1,43 @@
 export async function onRequest(context) {
   
-  let fid = context.param.cafid ; 
- 
-  const formData = await context.request.json()  ;
-  const vurl = formData.videourl ; //  vurl 
-  
+  let videoKey = context.param.cafid ; 
+  let bucket = context.env.bucket;
   try {
-    
-      if( vurl .includes( 'youtube.com/')  ) {
-              let strspl  = vurl.split('youtube.com/') ;
-              let pubturl = strspl[1]  ;
+    const obj = await bucket.get(videoKey);
+    if (!obj) {
+      return new Response('Video not found', { status: 404 });
+    }
 
-              if( pubturl .includes('watch?v=' ) ) {
-                  vid = pubturl.split('watch?v=')[1] ;
-                  ws = 'w' ;
-               }
+    // Get the range header if it exists
+    const range = obj.range;
+    const headers = new Headers();
 
+    // Set content type and other necessary headers
+    headers.set('Content-Type', 'video/mp4');
+    headers.set('Accept-Ranges', 'bytes');
+    headers.set('Access-Control-Allow-Origin', '*');
+    headers.set ('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    headers.set('Cache-Control', 'public, max-age=3600');
 
-              if( pubturl .includes('shorts/') ) {
-                    vid = pubturl.split('shorts/')[1] ;
-                    ws = 's' ;
-              }
-
-
-        }
-       pcode = ws + '@' + vid + '@if' ;
-       let fetchre = await  fetch('http://pool.bayx.uk/pyapp/pool/prof/'+pcode ) ; 
-       let re = await fetchre.text();
-       return new Response(
-         re , {  headers: { 'Content-Type': 'text/html;charset=UTF-8' },    }
-       );
-
-  
-    } catch (error) {
-    //  console.error('Error parsing FormData:', error);
-      return new Response(JSON.stringify({ error: 'Failed to parse form data ','vurl': vurl ,
-        'pcode':pcode , 'ws':ws, 'vid': vid                                 }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
+    if (range) {
+      headers.set('Content-Range', `bytes ${range.offset}-${range.end}/${obj.size}`);
+      headers.set('Content-Length', range.length);
+      return new Response(obj.body, {
+        status: 206,
+        headers
       });
     }
-     
+
+    headers.set('Content-Length', obj.size);
+    return new Response(obj.body, {
+      headers
+    });
+  } catch (error) {
+    return new Response(`Error: ${error.message}`, { status: 500 });
+  }
+ 
+      
 }
+
+
+ 
