@@ -1,0 +1,23 @@
+{
+  "info": {
+    "title": "aespa\u90a3\u7d0a\u4e82\u7684\u4e2d\u6587\u7cfb\u7d71#aespa #\u5be7\u85dd\u5353 #\u91d1\u51ac\u5929 #\u5409\u8cfd\u723e #\u4e0aSoul\u9047\u898b\u6709\u8da3\u9748\u9b42",
+    "channel": "\u996d\u8c46\u5a31\u63a2",
+    "upload_date": "20250215",
+    "duration": 136,
+    "view_count": 772
+  },
+  "tracks": {
+    "paudio": {
+      "format_id": "140",
+      "ext": "m4a",
+      "filesize": "2.10 MB",
+      "codec": "mp4a.40.2"
+    },
+    "p720": {
+      "format_id": "136",
+      "ext": "mp4",
+      "filesize": "24.13 MB",
+      "codec": "avc1.64001f"
+    }
+  }
+}
