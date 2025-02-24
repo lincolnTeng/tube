@@ -1,8 +1,8 @@
 export async function onRequest(context) {
-  
+    try {
   let videoKey = context.params.cafid ; 
   let bucket = context.env.tubespace;
-  try {
+
     const obj = await bucket.get(videoKey);
     if (!obj) {
       return new Response('Video not found ,key:'+videoKey, { status: 404 });
