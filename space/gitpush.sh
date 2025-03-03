@@ -16,6 +16,6 @@ git add .
 git commit -m "$COMMIT_MESSAGE"
 
 # 推送到 GitHub
-git push origin main # 或者你的主分支名称
+git push origin main
 
-echo "Update process completed."
+echo "Space directory updated and pushed to GitHub."
