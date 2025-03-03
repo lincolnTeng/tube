@@ -15,8 +15,8 @@ export async function onRequest(context) {
  
 
     re += ` <div class="col-md-2">`;
-    const encodedFilename = encodeURIComponent(`${title}.${track}.mp4`);
-    re += `<a href="/downcafi/${fid}" download=${encodeFilename} >`;
+    const encodename = encodeURIComponent(`${title}.${track}.mp4`);
+    re += `<a href="/downcafi/${fid}" download=${encodename} >`;
     re += `<span  class="badge bg-info">${track}</span></a>`;
     re += `</div>` ;    
     return new Response(
