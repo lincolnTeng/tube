@@ -11,12 +11,12 @@ export async function onRequest(context) {
    let fetchpath = `https://tube.bayx.uk/space/${timedir}/${vid}.cfj`;
    const fetchre  = await fetch ( fetchpath );
     const cafiline = await fetchre.text();
-   const [ track , fid ]  = cafiline.split('=') ;
+   const [ track , fid ,title]  = cafiline.split('=') ;
  
 
     re += ` <div class="col-md-2">`;
          
-    re += `<a href="/downcafi${fid}" download>`;
+    re += `<a href="/downcafi/${fid}" download=“${title}.${track}.mp4">`;
     re += `<span  class="badge bg-info">${track}</span></a>`;
     re += `</div>` ;    
     return new Response(
