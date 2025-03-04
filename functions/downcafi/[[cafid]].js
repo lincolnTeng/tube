@@ -1,6 +1,4 @@
- 
-
-export async function onRequest(context) {
+ export async function onRequest(context) {
   // Configuration
   const B2_APPLICATION_KEY_ID = '004a21f0da92b3f0000000001';
   const B2_APPLICATION_KEY = 'K004F5JCCj3VMDraFDRlPRruHdbssJE';
@@ -15,10 +13,10 @@ export async function onRequest(context) {
       region: B2_REGION,
     });
 
-    let videoKey = context.params.cafid;
+    let [timekey,videoKey] = context.params.cafid;
 
     // Construct the URL
-    const url = `https://${B2_ENDPOINT}/${B2_BUCKET_NAME}/${videoKey}`;
+    const url = `https://${B2_ENDPOINT}/${B2_BUCKET_NAME}/${timekey}/${videoKey}`;
 
 
     // Sign the request using aws4fetch
