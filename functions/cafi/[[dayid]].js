@@ -16,8 +16,10 @@ export async function onRequest(context) {
 
     re += ` <div class="col-md-2">`;
     const encodename = encodeURIComponent(`${title}.${track}.mp4`);
-    re += `<a href="/downcafi/${fid}" download=${encodename} >`;
-    re += `<span  class="badge bg-info">${track}</span></a>`;
+//    re += `<a href="/downcafi/${fid}" download=${encodename} >`;
+//    re += `<span  class="badge bg-info">${track}</span></a>`;
+   re += `<span  data-durl="/downcafi/${fid}" data-dname=${encodename} class="badge bg-info" `;
+   re += ` onclick=downcfclick(this) > ${track}</span>` ;
     re += `</div>` ;    
     return new Response(
          re , {
