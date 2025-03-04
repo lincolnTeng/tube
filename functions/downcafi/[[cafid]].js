@@ -20,8 +20,8 @@
 
 
     // Sign the request using aws4fetch
-    const signedResponse = await aws.fetch(url);
-
+    //const signedResponse = await aws.fetch(url);
+    const signedResponse = await aws.sign(url);
     if (!signedResponse.ok) {
       console.error("Error fetching signed URL:", signedResponse.status, signedResponse.statusText);
       return new Response(JSON.stringify({ error: 'Failed to get signed URL', status: signedResponse.status, statusText: signedResponse.statusText }), {
