@@ -1,4 +1,4 @@
- 
+  
 
 export async function onRequest(context) {
 const B2 = require('backblaze-b2');
