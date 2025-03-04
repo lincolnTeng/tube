@@ -39,6 +39,13 @@ try {
     status: 302, // Temporary redirect
     headers: headers
   });
+} catch (error) {
+
+      return new Response(JSON.stringify({ error: 'Failed make b2 url '   }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
       
 }
 
