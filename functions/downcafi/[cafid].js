@@ -1,4 +1,4 @@
-import { AwsClient } from 'aws4fetch';
+ 
 
 export async function onRequest(context) {
   // Configuration
@@ -7,7 +7,7 @@ export async function onRequest(context) {
   const B2_BUCKET_NAME = 'b2tube';
   const B2_ENDPOINT = 's3.us-west-004.backblazeb2.com'; // Your B2 S3 Endpoint
   const B2_REGION = 'us-west-004'; // Region (required, but doesn't strictly matter for B2)
-
+ const { AwsClient } = require('aws4fetch'); 
   try {
     const aws = new AwsClient({
       accessKeyId: B2_APPLICATION_KEY_ID,
