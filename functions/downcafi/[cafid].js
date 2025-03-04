@@ -1,42 +1,44 @@
+import { B2 } from '@backblaze/b2-js';
+
 export async function onRequest(context) {
-    try {
-  let videoKey = context.params.cafid ; 
 
-  let bucket = context.env.tubespace;
+// Configuration
+const B2_APPLICATION_KEY_ID = '004a21f0da92b3f0000000001';
+const B2_APPLICATION_KEY = 'K004F5JCCj3VMDraFDRlPRruHdbssJE';
+const B2_BUCKET_NAME = 'b2tube';
 
-    const obj = await bucket.get(videoKey);
-    if (!obj) {
-      return new Response('Video not found ,key:'+videoKey, { status: 404 });
-    }
 
-    // Get the range header if it exists
-    const range = obj.range;
-    const headers = new Headers();
-
-    // Set content type and other necessary headers
-    headers.set('Content-Type', 'video/mp4');
-    headers.set('Accept-Ranges', 'bytes');
-    headers.set('Access-Control-Allow-Origin', '*');
-    headers.set ('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    headers.set('Cache-Control', 'public, max-age=3600');
-
-    if (range) {
-      headers.set('Content-Range', `bytes ${range.offset}-${range.end}/${obj.size}`);
-      headers.set('Content-Length', range.length);
-      return new Response(obj.body, {
-        status: 206,
-        headers
-      });
-    }
-
-    headers.set('Content-Length', obj.size);
-    return new Response(obj.body, {
-      headers
+try {
+    const b2 = new B2({
+      applicationKeyId: B2_APPLICATION_KEY_ID,
+      applicationKey: B2_APPLICATION_KEY
     });
-  } catch (error) {
-    return new Response(`Error: ${error.message}`, { status: 500 });
-  }
- 
+
+    let videoKey = context.params.cafid ; 
+
+    // Authenticate with B2
+    await b2.authorize();
+    
+    const downloadAuth = await b2.getDownloadAuthorization({
+      bucketName: B2_BUCKET_NAME,
+      fileNamePrefix: videoKey, // 使用 key 而不是 originalFileName
+      validDurationInSeconds: 3600 // URL valid for 1 hour
+    });
+  
+    const downloadUrl = 
+        `${downloadAuth.downloadUrl}/file/${B2_BUCKET_NAME}/${key}?authorization=${downloadAuth.authorizationToken}`; 
+
+    
+   const headers = new Headers({
+    'Location': downloadUrl 
+    // This header tells browsers to download the file instead of displaying it
+   });
+  
+  // Return a redirect response that will trigger the download with custom filename
+  return new Response(null, {
+    status: 302, // Temporary redirect
+    headers: headers
+  });
       
 }
 
