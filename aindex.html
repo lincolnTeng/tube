@@ -166,6 +166,37 @@
         }
     }
 
+   async function downcfclick(ele ){
+       const durl = ele.dataset.durl ;
+       const dname = ele.dataset.dname ;
+        const res = await fetch(durl); // Fetch the JSON response
+        if (!res.ok) {
+           throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+         const fdata = await res.json(); // Parse the JSON
+ 
+       const link = document.createElement('a');
+
+      link.download = dname ; // Set the filename for the download
+//      link.style.display = 'none';
+     link.target="_blank";
+             link.href = fdata.durl  ;
+      // Append the link to the body
+      document.body.appendChild(link);
+
+      // Trigger the download
+     // link.click();
+ setTimeout(() => {
+  // Trigger the download
+  link.click();
+ }, 0);
+      // Remove the link from the body
+  //    document.body.removeChild(link);
+
+       
+   }     
+
     // 内容加载
     async function gotoonclick(path) {
         const response = await fetch(path);
