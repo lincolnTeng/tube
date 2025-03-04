@@ -1,6 +1,7 @@
-import { B2 } from '@backblaze/b2-js';
+ 
 
 export async function onRequest(context) {
+const B2 = require('backblaze-b2');
 
 // Configuration
 const B2_APPLICATION_KEY_ID = '004a21f0da92b3f0000000001';
