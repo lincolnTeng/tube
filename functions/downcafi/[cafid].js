@@ -1,54 +1,51 @@
-  
-
 export async function onRequest(context) {
-const B2 = require('backblaze-b2');
+  const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+  const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
-// Configuration
-const B2_APPLICATION_KEY_ID = '004a21f0da92b3f0000000001';
-const B2_APPLICATION_KEY = 'K004F5JCCj3VMDraFDRlPRruHdbssJE';
-const B2_BUCKET_NAME = 'b2tube';
+  // Configuration
+  const B2_APPLICATION_KEY_ID = '004a21f0da92b3f0000000001'; // or S3 Access Key ID
+  const B2_APPLICATION_KEY = 'K004F5JCCj3VMDraFDRlPRruHdbssJE'; // or S3 Secret Access Key
+  const B2_BUCKET_NAME = 'b2tube';
+  const B2_ENDPOINT = 's3.us-west-004.backblazeb2.com'; // Replace with your B2 S3 endpoint region!
 
 
-try {
-    const b2 = new B2({
-      applicationKeyId: B2_APPLICATION_KEY_ID,
-      applicationKey: B2_APPLICATION_KEY
+  try {
+
+    const s3Client = new S3Client({
+      endpoint: `https://${B2_ENDPOINT}`, //  Backblaze B2 S3 endpoint
+      region: 'us-west-004', // or your specific region
+      credentials: {
+        accessKeyId: B2_APPLICATION_KEY_ID,
+        secretAccessKey: B2_APPLICATION_KEY,
+      },
+      forcePathStyle: true, // Crucial for Backblaze B2
     });
 
-    let videoKey = context.params.cafid ; 
+    let videoKey = context.params.cafid;
 
-    // Authenticate with B2
-    await b2.authorize();
-    
-    const downloadAuth = await b2.getDownloadAuthorization({
-      bucketName: B2_BUCKET_NAME,
-      fileNamePrefix: videoKey, // 使用 key 而不是 originalFileName
-      validDurationInSeconds: 3600 // URL valid for 1 hour
+    // Create command to get the object
+    const command = new GetObjectCommand({
+      Bucket: B2_BUCKET_NAME,
+      Key: videoKey,
     });
-  
-    const downloadUrl = 
-        `${downloadAuth.downloadUrl}/file/${B2_BUCKET_NAME}/${key}?authorization=${downloadAuth.authorizationToken}`; 
 
-    
-   const headers = new Headers({
-    'Location': downloadUrl 
-    // This header tells browsers to download the file instead of displaying it
-   });
-  
-  // Return a redirect response that will trigger the download with custom filename
-  return new Response(null, {
-    status: 302, // Temporary redirect
-    headers: headers
-  });
-} catch (error) {
+    // Generate a presigned URL with a 1-hour expiration
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
 
-      return new Response(JSON.stringify({ error: 'Failed make b2 url '   }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-      
+    const headers = new Headers({
+      'Location': url,
+    });
+
+    // Return a redirect response
+    return new Response(null, {
+      status: 302, // Temporary redirect
+      headers: headers,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return new Response(JSON.stringify({ error: 'Failed to generate S3 presigned URL', details: error.message }), {
+      status: 500, // Internal Server Error
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }
-
-
- 
