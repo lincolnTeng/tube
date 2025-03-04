@@ -20,8 +20,8 @@
 
 
     // Sign the request using aws4fetch
-    //const signedResponse = await aws.fetch(url);
-    const signedResponse = await aws.sign(url);
+    const signedResponse = await aws.fetch(url);
+    //const signedResponse = await aws.sign(url);
     if (!signedResponse.ok) {
       console.error("Error fetching signed URL:", signedResponse.status, signedResponse.statusText);
       return new Response(JSON.stringify({ error: 'Failed to get signed URL', status: signedResponse.status, statusText: signedResponse.statusText }), {
@@ -32,15 +32,17 @@
 
     const signedUrl = signedResponse.url; // The signed URL is now in response.url
 
+    const jsonResponse = {
+      durl: signedUrl, // durl property containing the signed URL
+    };
 
-    const headers = new Headers({
-      'Location': signedUrl,
-    });
-
-    // Return a redirect response
-    return new Response(null, {
-      status: 302, // Temporary redirect
-      headers: headers,
+    // Return JSON response
+    return new Response(JSON.stringify(jsonResponse), {
+      status: 200, // OK status
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache' // Prevent caching of the URL
+      },
     });
 
   } catch (error) {
