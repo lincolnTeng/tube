@@ -177,7 +177,7 @@
          const fdata = await res.json(); // Parse the JSON
  
        const link = document.createElement('a');
-      link.href = fdata.durl ;
+      link.href = fdata.durl + "?download=true" ;
       link.download = dname ; // Set the filename for the download
 //      link.style.display = 'none';
 
