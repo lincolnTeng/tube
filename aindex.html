@@ -165,8 +165,77 @@
             }
         }
     }
+async function downcfclick(ele) {
+  const durl = ele.dataset.durl;
+  const dname = ele.dataset.dname;
+  const progressDivId = 'download-progress-' + Math.random().toString(36).substr(2, 9);
 
-   async function downcfclick(ele ){
+  // 创建进度显示div
+  const progressDiv = document.createElement('div');
+  progressDiv.id = progressDivId;
+  progressDiv.style.fontSize = '12px';
+  progressDiv.style.color = '#666';
+  
+  // 插入进度div
+  ele.parentNode.insertBefore(progressDiv, ele.nextSibling);
+
+  try {
+    // 发起 fetch 请求
+    const response = await fetch(durl);
+    
+    // 获取文件大小
+    const contentLength = response.headers.get('Content-Length');
+    const totalSize = contentLength ? parseInt(contentLength, 10) : null;
+
+    // 检查浏览器是否支持 streaming
+    if (!response.body || !window.WritableStream) {
+      throw new Error('当前浏览器不支持文件流下载');
+    }
+
+    // 创建文件流
+    const fileStream = streamSaver.createWriteStream(dname, {
+      size: totalSize // 可选：提供文件大小
+    });
+
+    const writer = fileStream.getWriter();
+    const reader = response.body.getReader();
+
+    let receivedLength = 0;
+
+    // 读取并写入流
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        // 关闭写入流
+        await writer.close();
+        progressDiv.textContent = '100%';
+        break;
+      }
+
+      // 写入数据块
+      await writer.write(value);
+
+      // 更新下载进度
+      receivedLength += value.length;
+      if (totalSize) {
+        const progress = (receivedLength / totalSize * 100).toFixed(0);
+        progressDiv.textContent = `${progress}%`;
+      }
+    }
+
+    console.log('下载完成');
+  } catch (error) {
+    console.error('下载失败:', error);
+    progressDiv.textContent = '下载失败';
+    progressDiv.style.color = 'red';
+  }
+}
+
+
+        
+
+   async function downcfclickrong(ele ){
        const durl = ele.dataset.durl ;
        const dname = ele.dataset.dname ;
         const res = await fetch(durl); // Fetch the JSON response
@@ -232,5 +301,6 @@
     </script>
 
         <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/streamsaver@2.0.6/StreamSaver.min.js"></script>
 </body>
 </html>
