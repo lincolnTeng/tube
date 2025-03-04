@@ -181,9 +181,14 @@ async function downcfclick(ele) {
 
   try {
     // 发起 fetch 请求
-    const response = await fetch(durl);
-    
+    const res = await fetch(durl);
+       if (!res.ok) {
+           throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+   const fdata = await res.json(); // Parse the JSON
+     const furl = fdata.durl ;
     // 获取文件大小
+    const response = await fetch(furl);
     const contentLength = response.headers.get('Content-Length');
     const totalSize = contentLength ? parseInt(contentLength, 10) : null;
 
