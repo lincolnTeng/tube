@@ -185,8 +185,11 @@
       document.body.appendChild(link);
 
       // Trigger the download
-      link.click();
-
+     // link.click();
+ setTimeout(() => {
+  // Trigger the download
+  link.click();
+ }, 0);
       // Remove the link from the body
   //    document.body.removeChild(link);
 
