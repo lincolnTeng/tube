@@ -7,6 +7,8 @@ if [ -z "$COMMIT_MESSAGE" ]; then
   exit 1
 fi
 
+git pull daytube main
+
 git add .
 
 git commit -m "$COMMIT_MESSAGE"
