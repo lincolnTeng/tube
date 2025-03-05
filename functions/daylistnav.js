@@ -1,6 +1,7 @@
 // functions/nav.js
 export async function onRequest(context) {
     
+   const nav = require('daynav.json');
 
 
     function buildNavHtml(items, parentId = '') {
@@ -43,9 +44,10 @@ export async function onRequest(context) {
         html += '</ul>';
         return html;
     }
-    const res  = await fetch("https://tube.bayx.uk/space/daynav.json") ;
-    let nav  ; 
-    if( res.ok)  nav = await res.json() ; 
+    
+    //const res  = await fetch("https://tube.bayx.uk/space/daynav.json") ;
+    //let nav  ; 
+    //if( res.ok)  nav = await res.json() ; 
     const navHtml = buildNavHtml(nav);
     return new Response(navHtml, {
         headers: { 'Content-Type': 'text/html;charset=UTF-8' },
