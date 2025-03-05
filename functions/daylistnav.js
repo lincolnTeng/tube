@@ -1,7 +1,7 @@
 // functions/nav.js
 export async function onRequest(context) {
     
-   const nav = require('daynav.json');
+   const nav = require('../space/daynav.json');
 
 
     function buildNavHtml(items, parentId = '') {
