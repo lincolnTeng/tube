@@ -1,6 +1,6 @@
 // functions/nav.js
 export async function onRequest(context) {
-    const nav = [] ; 
+    
 
 
     function buildNavHtml(items, parentId = '') {
@@ -44,7 +44,7 @@ export async function onRequest(context) {
         return html;
     }
     const res  = await fetch("/space/daynav.json") ; 
-    if( res.ok)  nav = await res.json() ; 
+    if( res.ok) const nav = await res.json() ; 
     const navHtml = buildNavHtml(nav);
     return new Response(navHtml, {
         headers: { 'Content-Type': 'text/html;charset=UTF-8' },
