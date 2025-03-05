@@ -43,8 +43,9 @@ export async function onRequest(context) {
         html += '</ul>';
         return html;
     }
-    const res  = await fetch("/space/daynav.json") ; 
-    if( res.ok) const nav = await res.json() ; 
+    const res  = await fetch("/space/daynav.json") ;
+    let nav  ; 
+    if( res.ok)  nav = await res.json() ; 
     const navHtml = buildNavHtml(nav);
     return new Response(navHtml, {
         headers: { 'Content-Type': 'text/html;charset=UTF-8' },
