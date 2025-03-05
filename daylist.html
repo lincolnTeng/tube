@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> daylist of Tube panel </title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            height: 100%;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #f1f1f1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* 树状导航样式 */
+        .tree ul {
+            list-style: none;
+            padding-left: 20px;
+            margin: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .tree ul.open {
+            max-height: 1000px; /* 足够大的高度以适应内容 */
+            transition: max-height 0.5s ease-in;
+        }
+        .tree li {
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        /* 添加箭头指示器 */
+        .tree li.has-children > span:before {
+            content: '▶';
+            display: inline-block;
+            margin-right: 5px;
+            transition: transform 0.3s ease;
+        }
+        .tree li.has-children.open > span:before {
+            transform: rotate(90deg);
+        }
+        /* 鼠标悬停效果 */
+        .tree li span:hover {
+            color: #0066cc;
+        }
+        
+        iframe {
+            width: 100%;
+
+            border: none;
+            margin-bottom: 20px;
+        }
+    </style>
+    <!-- Bootstrap CSS -->
+<link href="/static/css/bootstrap.css" rel="stylesheet">    
+<link href="/static/css/infodiv.css" rel="stylesheet">    
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    
+</head>
+<body>
+    <div class="row d-flex justify-content-center " id=top> 
+
+        <nav class="navbar navbar-expand-lg bg-dark col-10" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor02">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Home
+            <span class="visually-hidden">(current)</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Features</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Pricing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">About</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a>
+          </div>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-sm-2" type="search" placeholder="Search">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
+    </div>
+   <!-- end of top nav div  -->
+
+    
+    <div class="container overflow-y-auto">
+        <div class="sidebar col-md-3 overflow-y-auto">
+            <div id="nav-tree"></div>
+        </div>
+        <div class="content col-md-9" id="content">
+            <h1>Loading...</h1>
+        </div>
+    </div>
+
+
+
+
+    
+    <div class="row col-lg-12" id=bottom>
+    
+    <figure class="text-center">
+  <blockquote class="blockquote">
+    <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+  
+  </blockquote>
+  <figcaption class="blockquote-footer">
+    Someone famous in <cite title="Source Title">Source Title</cite>
+  </figcaption>
+</figure>
+    </div>
+   <!-- end of bottom div  -->
+
+
+
+
+
+
+    
+    <script>
+    // 导航点击处理 - 处理展开/收起动画
+    async function navonclick(target) {
+        const element = document.querySelector(`[data-id="${target}"]`);
+        if (element) {
+            // 切换当前节点的展开状态
+            element.classList.toggle('open');
+            const ul = element.querySelector('ul');
+            if (ul) {
+                ul.classList.toggle('open');
+            }
+        }
+    }
+async function downcfclick(ele) {
+  const durl = ele.dataset.durl;
+  const dname = ele.dataset.dname;
+  const progressDivId = 'download-progress-' + Math.random().toString(36).substr(2, 9);
+
+  // 创建进度显示div
+  const progressDiv = document.createElement('div');
+  progressDiv.id = progressDivId;
+  progressDiv.style.fontSize = '12px';
+  progressDiv.style.color = '#666';
+  
+  // 插入进度div
+  ele.parentNode.insertBefore(progressDiv, ele.nextSibling);
+
+  try {
+    // 发起 fetch 请求
+    const res = await fetch(durl);
+       if (!res.ok) {
+           throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+   const fdata = await res.json(); // Parse the JSON
+     const furl = fdata.durl ;
+    // 获取文件大小
+    const response = await fetch(furl);
+    const contentLength = response.headers.get('Content-Length');
+    const totalSize = contentLength ? parseInt(contentLength, 10) : null;
+
+    // 检查浏览器是否支持 streaming
+    if (!response.body || !window.WritableStream) {
+      throw new Error('当前浏览器不支持文件流下载');
+    }
+
+    // 创建文件流
+    const fileStream = streamSaver.createWriteStream(dname, {
+      size: totalSize // 可选：提供文件大小
+    });
+
+    const writer = fileStream.getWriter();
+    const reader = response.body.getReader();
+
+    let receivedLength = 0;
+
+    // 读取并写入流
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        // 关闭写入流
+        await writer.close();
+        progressDiv.textContent = '100%';
+        break;
+      }
+
+      // 写入数据块
+      await writer.write(value);
+
+      // 更新下载进度
+      receivedLength += value.length;
+      if (totalSize) {
+        const progress = (receivedLength / totalSize * 100).toFixed(0);
+        progressDiv.textContent = `${progress}%`;
+      }
+    }
+
+    console.log('下载完成');
+  } catch (error) {
+    console.error('下载失败:', error);
+    progressDiv.textContent = '下载失败';
+    progressDiv.style.color = 'red';
+  }
+}
+
+
+        
+
+   async function downcfclickrong(ele ){
+       const durl = ele.dataset.durl ;
+       const dname = ele.dataset.dname ;
+        const res = await fetch(durl); // Fetch the JSON response
+        if (!res.ok) {
+           throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+         const fdata = await res.json(); // Parse the JSON
+ 
+       const link = document.createElement('a');
+
+      link.download = dname ; // Set the filename for the download
+//      link.style.display = 'none';
+     link.target="_blank";
+             link.href = fdata.durl  ;
+      // Append the link to the body
+      document.body.appendChild(link);
+
+      // Trigger the download
+     // link.click();
+ setTimeout(() => {
+  // Trigger the download
+  link.click();
+ }, 0);
+      // Remove the link from the body
+  //    document.body.removeChild(link);
+
+       
+   }     
+
+    // 内容加载
+    async function gotoonclick(path) {
+        const response = await fetch(path);
+        const content = await response.text();
+        document.getElementById('content').innerHTML = content;
+    }
+    // 内容加载
+    async function gotobtn(element) {
+        const inputid = element.dataset.inputid ; 
+        const outputid = element.dataset.outputid ; 
+        const fpath = element.dataset.fpath ;
+        const inputvalue = document.getElementById(inputid).value ;
+        const formData = { [inputid] : inputvalue } ;
+        const baseurl = "https://tube.bayx.uk" ;
+        
+        const response = await fetch( baseurl+fpath , {    method: 'POST',    
+           headers: {                        'Content-Type': 'application/json', } , // 指定请求体内容类型},
+           body: JSON.stringify(formData), // 将 JavaScript 对象转换为 JSON 字符串
+            }    );
+        
+        const content = await response.text();
+        document.getElementById( outputid ).innerHTML = content;
+    }
+
+        
+
+    // 页面加载时获取导航树
+    document.addEventListener('DOMContentLoaded', async () => {
+        const response = await fetch('/daylistnav');
+        const navHtml = await response.text();
+        document.getElementById('nav-tree').innerHTML = navHtml;
+    });
+    </script>
+
+        <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/streamsaver@2.0.6/StreamSaver.min.js"></script>
+</body>
+</html>
