@@ -1,0 +1,41 @@
+{
+  "info": {
+    "title": "aespa - 'Spicy' Live (SYNK: PARALLEL LINE Tour, London)",
+    "channel": "KikiTube",
+    "upload_date": "20250303",
+    "duration": 218,
+    "view_count": 713
+  },
+  "tracks": {
+    "paudio": {
+      "format_id": "140",
+      "ext": "m4a",
+      "filesize": "3.37 MB",
+      "codec": "mp4a.40.2"
+    },
+    "p720": {
+      "format_id": "136",
+      "ext": "mp4",
+      "filesize": "55.47 MB",
+      "codec": "avc1.64001f"
+    },
+    "p1080": {
+      "format_id": "299",
+      "ext": "mp4",
+      "filesize": "157.79 MB",
+      "codec": "avc1.64002a"
+    },
+    "p1440": {
+      "format_id": "623",
+      "ext": "mp4",
+      "filesize": "N/A",
+      "codec": "vp09.00.50.08"
+    },
+    "p2160": {
+      "format_id": "628",
+      "ext": "mp4",
+      "filesize": "N/A",
+      "codec": "vp09.00.51.08"
+    }
+  }
+}

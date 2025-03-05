@@ -1,0 +1,41 @@
+{
+  "info": {
+    "title": "\ud558\uce20\ud22c\ud558\uce20, \ud558\ud22c\ud558\uc758 \ub5a8\ub9ac\ub294 \uccab \ucd9c\uadfc\uae38 \ud3ec\ud1a0\ud0c0\uc784\ud83d\ude18(\ubc15\uc18c\ud604\uc758 \ub7ec\ube0c\uac8c\uc784 \ucd9c\uadfc\uae38)\ud83d\udcfb Hearts2Hearts 25.3.5 Newsen",
+    "channel": "Newsen",
+    "upload_date": "20250305",
+    "duration": 132,
+    "view_count": 17910
+  },
+  "tracks": {
+    "paudio": {
+      "format_id": "140",
+      "ext": "m4a",
+      "filesize": "2.04 MB",
+      "codec": "mp4a.40.2"
+    },
+    "p720": {
+      "format_id": "136",
+      "ext": "mp4",
+      "filesize": "31.42 MB",
+      "codec": "avc1.64001f"
+    },
+    "p1080": {
+      "format_id": "299",
+      "ext": "mp4",
+      "filesize": "88.13 MB",
+      "codec": "avc1.64002a"
+    },
+    "p1440": {
+      "format_id": "623",
+      "ext": "mp4",
+      "filesize": "N/A",
+      "codec": "vp09.00.50.08"
+    },
+    "p2160": {
+      "format_id": "628",
+      "ext": "mp4",
+      "filesize": "N/A",
+      "codec": "vp09.00.51.08"
+    }
+  }
+}
