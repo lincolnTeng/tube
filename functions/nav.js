@@ -7,6 +7,11 @@ export async function onRequest(context) {
             "path": "home.html"
         },
         {
+            "name": "daylist",
+            "type": "link",
+            "path": "daylist.html"
+        },
+        {
             "name": "tube",
             "type": "page",
             "path": "tube.html"
@@ -147,8 +152,14 @@ export async function onRequest(context) {
             html += '>';
             
             if (item.type) {
-                // 内容节点
+                if( item.type === 'link' ){
+                html += `<a href=${item.path} > <span >${item.name}</span></a>`;
+                    
+                }
+                    
+                 else  {// 内容节点
                 html += `<span onclick="gotoonclick('/${item.type}/${item.path}')">${item.name}</span>`;
+                 }
             } else {
                 // 目录节点
                 html += `<span onclick="navonclick('${currentId}')">${item.name}</span>`;
