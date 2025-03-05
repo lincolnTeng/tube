@@ -43,7 +43,7 @@ export async function onRequest(context) {
         html += '</ul>';
         return html;
     }
-    const res  = await fetch("/space/daynav.json") ;
+    const res  = await fetch("https://tube.bayx.uk/space/daynav.json") ;
     let nav  ; 
     if( res.ok)  nav = await res.json() ; 
     const navHtml = buildNavHtml(nav);
