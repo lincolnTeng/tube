@@ -169,4 +169,32 @@
             const url = document.getElementById('videoInfo').dataset.url;
             await fetch(`${API_BASE}/task/submit`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            document.getElementById('videoInfo').style.display = 'none';
+            document.getElementById('taskUrl').value = '';
+            fetchQueues(); // 刷新队列
+        });
+
+        // 获取队列和状态
+        async function fetchQueues() {
+            const [waitingRes, finishedRes, statusRes] = await Promise.all([
+                fetch(`${API_BASE}/queue/waiting`),
+                fetch(`${API_BASE}/queue/finished`),
+                fetch(`${API_BASE}/status/current`)
+            ]);
+            const waiting = await waitingRes.json();
+            const finished = await finishedRes.json();
+            const status = await statusRes.json();
+            updateWaitingQueue(waiting);
+            updateFinishedQueue(finished);
+            updateCurrentTask(status.task);
+        }
+
+        // 页面加载时初始化
+        fetchQueues();
+        setInterval(fetchQueues, 5000); // 每 5 秒刷新一次
+    </script>
+</body>
+</html>
