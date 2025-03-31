@@ -1,8 +1,14 @@
 export async function onRequest(context) {
-    const { request } = context;
+    const { request, params } = context;
     const url = new URL(request.url);
-    const path = url.pathname.replace('/poolapi/', ''); // 提取 /api/ 后的路径
-    const hostUrl = `http://148.135.115.48:5000/api/${path}${url.search}`; // 构造 host.py 的 URL
+
+    // 使用 params.path 捕获动态路径
+    // params.path 是一个数组，包含所有路径段
+    const pathSegments = params.path || []; // 如果没有路径段，返回空数组
+    const path = pathSegments.join('/'); // 将路径段拼接为字符串，例如 ["task", "query"] -> "task/query"
+
+    // 构造 host.py 的目标 URL
+    const hostUrl = `http://148.135.115.48:5000/api/${path}${url.search}`;
 
     try {
         const hostResponse = await fetch(hostUrl, {
