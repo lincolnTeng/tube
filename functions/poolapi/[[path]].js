@@ -18,7 +18,7 @@ export async function onRequest(context) {
         });
 
         if (!hostResponse.ok) {
-            return new Response(JSON.stringify({ error: `Failed to fetch from host: ${hostResponse.statusText}` }), {
+            return new Response(JSON.stringify({ error: `Failed to fetch from host: ${hostResponse.statusText} hosturl: ${hostUrl} ` }), {
                 status: 500,
                 headers: { 'Content-Type': 'application/json' }
             });
