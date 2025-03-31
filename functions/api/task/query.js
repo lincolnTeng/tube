@@ -2,17 +2,10 @@ export async function onRequest(context) {
     const { request } = context;
     const url = new URL(request.url).searchParams.get('url');
     
-    // 假数据（调试用）
-    const fakeData = {
-        title: 'Sample Video',
-        duration: '3:45'
-    };
+    const hostResponse = await fetch(`http://148.135.115.48:5000/api/task/query?url=${encodeURIComponent(url)}`);
+    const data = await hostResponse.json();
     
-    // 模拟 fetch 远端逻辑（后续替换为真实 Host 地址）
-    // const response = await fetch(`http://host:port/query?url=${encodeURIComponent(url)}`);
-    // const data = await response.json();
-    
-    return new Response(JSON.stringify(fakeData), {
+    return new Response(JSON.stringify(data), {
         headers: { 'Content-Type': 'application/json' }
     });
 }
