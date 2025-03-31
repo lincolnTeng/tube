@@ -4,66 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Download Task Pool</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom Styles -->
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .navbar {
-            background-color: #343a40;
-        }
-        .content-section {
-            padding: 20px;
-            min-height: 80vh;
-        }
-        .task-card {
-            height: 100%;
-            border: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .queue-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .task-status {
-            background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .submit-area {
-            background-color: #ffffff;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        footer {
-            background-color: #343a40;
-            color: white;
-            padding: 10px 0;
-        }
+        body { background-color: #f8f9fa; font-family: 'Arial', sans-serif; }
+        .navbar { background-color: #343a40; }
+        .content-section { padding: 20px; min-height: 80vh; }
+        .task-card { height: 100%; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .queue-list { max-height: 300px; overflow-y: auto; }
+        .task-status { background-color: #e9ecef; padding: 15px; border-radius: 5px; }
+        .submit-area { background-color: #ffffff; padding: 15px; border-radius: 5px; }
+        .btn-primary { background-color: #007bff; border: none; }
+        .btn-primary:hover { background-color: #0056b3; }
+        footer { background-color: #343a40; color: white; padding: 10px 0; }
     </style>
 </head>
 <body>
-    <!-- Top Nav -->
     <nav class="navbar navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">YouTube Download Task Pool</a>
         </div>
     </nav>
 
-    <!-- Content Section -->
     <div class="container content-section">
         <div class="row g-3">
-            <!-- Waiting Task Queue -->
             <div class="col-md-3">
                 <div class="card task-card">
                     <div class="card-body">
@@ -73,9 +36,7 @@
                 </div>
             </div>
 
-            <!-- Middle Section: Current Task Status + New Task Submission -->
             <div class="col-md-6">
-                <!-- Current Task Status -->
                 <div class="task-status mb-3" id="currentTaskStatus">
                     <h5>Current Task Status</h5>
                     <p id="taskName">No task running</p>
@@ -85,7 +46,6 @@
                     <p class="mt-2" id="taskStatusText">Status: Idle</p>
                 </div>
 
-                <!-- New Task Submission Area -->
                 <div class="submit-area">
                     <h5>Submit New Task</h5>
                     <div class="mb-3">
@@ -100,7 +60,6 @@
                 </div>
             </div>
 
-            <!-- Finished Task Queue -->
             <div class="col-md-3">
                 <div class="card task-card">
                     <div class="card-body">
@@ -112,29 +71,24 @@
         </div>
     </div>
 
-    <!-- Bottom Info -->
     <footer class="text-center">
         <p>© 2025 YouTube Download Task Pool. All rights reserved.</p>
     </footer>
 
-    <!-- Bootstrap JS and Custom Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const API_BASE = 'https://tube.bayx.uk/api'; // Cloudflare Functions 的基础路径
+        const API_BASE = '/api'; // Cloudflare Functions 路径
 
-        // 更新等待队列
         function updateWaitingQueue(tasks) {
             const queue = document.getElementById('waitingQueue');
             queue.innerHTML = tasks.map(task => `<li class="list-group-item">Task ${task.id}: ${task.url}</li>`).join('');
         }
 
-        // 更新完成队列
         function updateFinishedQueue(tasks) {
             const queue = document.getElementById('finishedQueue');
             queue.innerHTML = tasks.map(task => `<li class="list-group-item">Task ${task.id}: ${task.title} <a href="${task.downloadLink}" class="float-end">Download</a></li>`).join('');
         }
 
-        // 更新当前任务状态
         function updateCurrentTask(task) {
             const taskName = document.getElementById('taskName');
             const taskProgress = document.getElementById('taskProgress');
@@ -152,7 +106,6 @@
             }
         }
 
-        // 查询视频信息
         document.getElementById('queryBtn').addEventListener('click', async () => {
             const url = document.getElementById('taskUrl').value;
             const response = await fetch(`${API_BASE}/task/query?url=${encodeURIComponent(url)}`);
@@ -161,23 +114,23 @@
             document.getElementById('videoTitle').textContent = `Title: ${data.title}`;
             document.getElementById('videoDuration').textContent = `Duration: ${data.duration}`;
             videoInfo.style.display = 'block';
-            videoInfo.dataset.url = url; // 临时存储 URL
+            videoInfo.dataset.url = url;
+            videoInfo.dataset.ws = data.ws; // 存储 ws 参数
         });
 
-        // 提交任务
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const url = document.getElementById('videoInfo').dataset.url;
+            const ws = document.getElementById('videoInfo').dataset.ws;
             await fetch(`${API_BASE}/task/submit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url })
+                body: JSON.stringify({ url, ws })
             });
             document.getElementById('videoInfo').style.display = 'none';
             document.getElementById('taskUrl').value = '';
-            fetchQueues(); // 刷新队列
+            fetchQueues();
         });
 
-        // 获取队列和状态
         async function fetchQueues() {
             const [waitingRes, finishedRes, statusRes] = await Promise.all([
                 fetch(`${API_BASE}/queue/waiting`),
@@ -192,9 +145,8 @@
             updateCurrentTask(status.task);
         }
 
-        // 页面加载时初始化
         fetchQueues();
-        setInterval(fetchQueues, 5000); // 每 5 秒刷新一次
+        setInterval(fetchQueues, 5000);
     </script>
 </body>
 </html>
