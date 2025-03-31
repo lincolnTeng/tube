@@ -12,10 +12,14 @@
         .task-card { height: 100%; border: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .queue-list { max-height: 300px; overflow-y: auto; }
         .task-status { background-color: #e9ecef; padding: 15px; border-radius: 5px; }
-        .submit-area { background-color: #ffffff; padding: 15px; border-radius: 5px; }
+        .submit-area { background-color: #ffffff; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .btn-primary { background-color: #007bff; border: none; }
         .btn-primary:hover { background-color: #0056b3; }
         footer { background-color: #343a40; color: white; padding: 10px 0; }
+        .video-info { margin-top: 10px; padding: 10px; background-color: #f1f3f5; border-radius: 5px; }
+        .video-info p { margin: 0; font-size: 0.9rem; }
+        .video-info select { width: 100%; margin-top: 10px; padding: 5px; border-radius: 5px; }
+        .video-player { margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -53,9 +57,14 @@
                     </div>
                     <button class="btn btn-primary me-2" id="queryBtn">Query</button>
                     <div class="mt-3" id="videoInfo" style="display: none;">
-                        <p id="videoTitle"></p>
-                        <p id="videoDuration"></p>
-                        <button class="btn btn-primary" id="submitBtn">Confirm Submission</button>
+                        <div class="video-player" id="player"></div>
+                        <div class="video-info">
+                            <p id="videoTitle"></p>
+                            <p id="videoDuration"></p>
+                            <label for="videoQuality">Select Quality:</label>
+                            <select id="videoQuality"></select>
+                            <button class="btn btn-primary mt-2 w-100" id="submitBtn">Confirm Submission</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,16 +85,26 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        const API_BASE = 'https://tube.bayx.uk/poolapi'; // Cloudflare Functions 路径
+        const API_BASE = '/poolapi';
+        let player;
 
         function updateWaitingQueue(tasks) {
             const queue = document.getElementById('waitingQueue');
+            if (!Array.isArray(tasks)) {
+                queue.innerHTML = '<li class="list-group-item">Error loading queue</li>';
+                return;
+            }
             queue.innerHTML = tasks.map(task => `<li class="list-group-item">Task ${task.id}: ${task.url}</li>`).join('');
         }
 
         function updateFinishedQueue(tasks) {
             const queue = document.getElementById('finishedQueue');
+            if (!Array.isArray(tasks)) {
+                queue.innerHTML = '<li class="list-group-item">Error loading queue</li>';
+                return;
+            }
             queue.innerHTML = tasks.map(task => `<li class="list-group-item">Task ${task.id}: ${task.title} <a href="${task.downloadLink}" class="float-end">Download</a></li>`).join('');
         }
 
@@ -94,10 +113,10 @@
             const taskProgress = document.getElementById('taskProgress');
             const taskStatusText = document.getElementById('taskStatusText');
             if (task) {
-                taskName.textContent = `Task: ${task.title}`;
-                taskProgress.style.width = `${task.progress}%`;
-                taskProgress.textContent = `${task.progress}%`;
-                taskStatusText.textContent = `Status: ${task.status}`;
+                taskName.textContent = `Task: ${task.title || 'Unknown'}`;
+                taskProgress.style.width = `${task.progress || 0}%`;
+                taskProgress.textContent = `${task.progress || 0}%`;
+                taskStatusText.textContent = `Status: ${task.status || 'Unknown'}`;
             } else {
                 taskName.textContent = 'No task running';
                 taskProgress.style.width = '0%';
@@ -106,43 +125,119 @@
             }
         }
 
-        document.getElementById('queryBtn').addEventListener('click', async () => {
+        // YouTube Iframe API 加载完成后的回调
+        function onYouTubeIframeAPIReady() {
+            // 留空，player 在 query 时创建
+        }
+
+        document.getElementById('queryBtn').addEventListener('click', () => {
             const url = document.getElementById('taskUrl').value;
-            const response = await fetch(`${API_BASE}/task/query?url=${encodeURIComponent(url)}`);
-            const data = await response.json();
-            const videoInfo = document.getElementById('videoInfo');
-            document.getElementById('videoTitle').textContent = `Title: ${data.title}`;
-            document.getElementById('videoDuration').textContent = `Duration: ${data.duration}`;
-            videoInfo.style.display = 'block';
-            videoInfo.dataset.url = url;
-            videoInfo.dataset.ws = data.ws; // 存储 ws 参数
+            const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
+            if (!videoIdMatch) {
+                alert('Invalid YouTube URL');
+                return;
+            }
+            const videoId = videoIdMatch[1];
+            const ws = url.includes('watch?v=') ? 'w' : 's';
+
+            // 创建 YouTube 播放器
+            if (player) player.destroy(); // 销毁之前的播放器
+            player = new YT.Player('player', {
+                height: '180',
+                width: '320',
+                videoId: videoId,
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onError': (event) => {
+                        console.error('Player error:', event.data);
+                        alert('Failed to load video');
+                    }
+                }
+            });
+
+            function onPlayerReady(event) {
+                const videoData = player.getVideoData();
+                const duration = player.getDuration();
+                const qualities = player.getAvailableQualityLevels();
+
+                // 格式化时长（秒 -> MM:SS）
+                const minutes = Math.floor(duration / 60);
+                const seconds = Math.floor(duration % 60);
+                const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                // 显示视频信息
+                const videoInfo = document.getElementById('videoInfo');
+                document.getElementById('videoTitle').textContent = `Title: ${videoData.title || 'Unknown'}`;
+                document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
+                videoInfo.style.display = 'block';
+                videoInfo.dataset.url = url;
+                videoInfo.dataset.ws = ws;
+
+                // 填充分辨率选项
+                const qualitySelect = document.getElementById('videoQuality');
+                qualitySelect.innerHTML = ''; // 清空选项
+                const qualityMap = {
+                    'small': '240p',
+                    'medium': '360p',
+                    'large': '480p',
+                    'hd720': '720p',
+                    'hd1080': '1080p',
+                    'highres': '1440p+'
+                };
+                qualities.forEach(quality => {
+                    const option = document.createElement('option');
+                    option.value = qualityMap[quality] || quality;
+                    option.textContent = qualityMap[quality] || quality;
+                    qualitySelect.appendChild(option);
+                });
+            }
         });
 
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const url = document.getElementById('videoInfo').dataset.url;
             const ws = document.getElementById('videoInfo').dataset.ws;
-            await fetch(`${API_BASE}/task/submit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url, ws })
-            });
-            document.getElementById('videoInfo').style.display = 'none';
-            document.getElementById('taskUrl').value = '';
-            fetchQueues();
+            const quality = document.getElementById('videoQuality').value;
+            try {
+                const response = await fetch(`${API_BASE}/task/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, ws, quality })
+                });
+                if (!response.ok) throw new Error('Submit failed');
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                document.getElementById('videoInfo').style.display = 'none';
+                document.getElementById('taskUrl').value = '';
+                if (player) player.destroy();
+                fetchQueues();
+            } catch (error) {
+                console.error('Submit error:', error);
+                alert('Failed to submit task: ' + error.message);
+            }
         });
 
         async function fetchQueues() {
-            const [waitingRes, finishedRes, statusRes] = await Promise.all([
-                fetch(`${API_BASE}/queue/waiting`),
-                fetch(`${API_BASE}/queue/finished`),
-                fetch(`${API_BASE}/status/current`)
-            ]);
-            const waiting = await waitingRes.json();
-            const finished = await finishedRes.json();
-            const status = await statusRes.json();
-            updateWaitingQueue(waiting);
-            updateFinishedQueue(finished);
-            updateCurrentTask(status.task);
+            try {
+                const [waitingRes, finishedRes, statusRes] = await Promise.all([
+                    fetch(`${API_BASE}/queue/waiting`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch waiting queue')),
+                    fetch(`${API_BASE}/queue/finished`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch finished queue')),
+                    fetch(`${API_BASE}/status/current`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch current status'))
+                ]);
+
+                updateWaitingQueue(Array.isArray(waitingRes) ? waitingRes : []);
+                updateFinishedQueue(Array.isArray(finishedRes) ? finishedRes : []);
+                updateCurrentTask(statusRes.task || null);
+            } catch (error) {
+                console.error('Fetch queues error:', error);
+                updateWaitingQueue([]);
+                updateFinishedQueue([]);
+                updateCurrentTask(null);
+            }
         }
 
         fetchQueues();
