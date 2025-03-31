@@ -1,7 +1,7 @@
 export async function onRequest(context) {
     const { request } = context;
     const url = new URL(request.url);
-    const path = url.pathname.replace('/api/', ''); // 提取 /api/ 后的路径
+    const path = url.pathname.replace('/poolapi/', ''); // 提取 /api/ 后的路径
     const hostUrl = `http://148.135.115.48:5000/api/${path}${url.search}`; // 构造 host.py 的 URL
 
     try {
