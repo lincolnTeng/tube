@@ -8,7 +8,7 @@ export async function onRequest(context) {
     const path = pathSegments.join('/'); // 将路径段拼接为字符串，例如 ["task", "query"] -> "task/query"
 
     // 构造 host.py 的目标 URL
-    const hostUrl = `http://148.135.115.48:5000/api/${path}${url.search}`;
+    const hostUrl = `http://pool.bayx.uk:5000/api/${path}${url.search}`;
 
     try {
         const hostResponse = await fetch(hostUrl, {
