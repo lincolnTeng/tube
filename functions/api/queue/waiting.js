@@ -1,15 +1,8 @@
 export async function onRequest(context) {
-    // 假数据（调试用）
-    const fakeWaiting = [
-        { id: 1, url: 'https://youtube.com/sample1' },
-        { id: 2, url: 'https://youtube.com/sample2' }
-    ];
+    const hostResponse = await fetch('http://148.135.115.48:5000/api/queue/waiting');
+    const data = await hostResponse.json();
     
-    // 模拟 fetch 远端逻辑
-    // const response = await fetch('http://host:port/queue/waiting');
-    // const data = await response.json();
-    
-    return new Response(JSON.stringify(fakeWaiting), {
+    return new Response(JSON.stringify(data), {
         headers: { 'Content-Type': 'application/json' }
     });
 }
