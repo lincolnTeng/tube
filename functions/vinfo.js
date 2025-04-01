@@ -187,7 +187,7 @@ var require_sax = __commonJS({
       };
       var Stream;
       try {
-        Stream = __require("stream").Stream;
+        Stream = {} ;// __require("stream").Stream;
       } catch (ex) {
         Stream = function() {
         };
