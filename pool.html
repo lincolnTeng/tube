@@ -140,7 +140,7 @@ document.getElementById('queryBtn').addEventListener('click', () => {
     const ws = url.includes('watch?v=') ? 'w' : 's';
 
     // Call the backend service using fetch
-    fetch(`http://pool.bayx.uk:5000/api/vinfo/${ws}/${videoId}`)
+    fetch(`${API_BASE}/vinfo/${ws}/${videoId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -193,7 +193,7 @@ document.getElementById('queryBtn').addEventListener('click', () => {
                     'modestbranding': 1
                 },
                 events: {
-                    'onReady': onPlayerReady,
+               
                     'onError': (event) => {
                         console.error('Player error:', event.data);
                         alert('Failed to load video');
@@ -210,79 +210,10 @@ document.getElementById('queryBtn').addEventListener('click', () => {
 
 
         
-        document.getElementById('queryBtn').addEventListener('click', () => {
-            const url = document.getElementById('taskUrl').value;
-            const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
-            if (!videoIdMatch) {
-                alert('Invalid YouTube URL');
-                return;
-            }
-            const videoId = videoIdMatch[1];
-            const ws = url.includes('watch?v=') ? 'w' : 's';
-
-            // 创建 YouTube 播放器
+      
     
-            function onPlayerReady(event) {
-                const videoData = player.getVideoData();
-                const duration = player.getDuration();
-                const qualities = player.getAvailableQualityLevels();
-
-                // 格式化时长（秒 -> MM:SS）
-                const minutes = Math.floor(duration / 60);
-                const seconds = Math.floor(duration % 60);
-                const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-                // 显示视频信息
-                const videoInfo = document.getElementById('videoInfo');
-                document.getElementById('videoTitle').textContent = `Title: ${videoData.title || 'Unknown'}`;
-                document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
-                videoInfo.style.display = 'block';
-                videoInfo.dataset.url = url;
-                videoInfo.dataset.ws = ws;
-
-                // 填充分辨率选项
-                const qualitySelect = document.getElementById('videoQuality');
-                qualitySelect.innerHTML = ''; // 清空选项
-                const qualityMap = {
-                    'small': '240p',
-                    'medium': '360p',
-                    'large': '480p',
-                    'hd720': '720p',
-                    'hd1080': '1080p',
-                    'highres': '1440p+'
-                };
-                qualities.forEach(quality => {
-                    const option = document.createElement('option');
-                    option.value = qualityMap[quality] || quality;
-                    option.textContent = qualityMap[quality] || quality;
-                    qualitySelect.appendChild(option);
-                });
-            }
-        });
-
-        document.getElementById('submitBtn').addEventListener('click', async () => {
-            const url = document.getElementById('videoInfo').dataset.url;
-            const ws = document.getElementById('videoInfo').dataset.ws;
-            const quality = document.getElementById('videoQuality').value;
-            try {
-                const response = await fetch(`${API_BASE}/task/submit`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url, ws, quality })
-                });
-                if (!response.ok) throw new Error('Submit failed');
-                const data = await response.json();
-                if (data.error) throw new Error(data.error);
-                document.getElementById('videoInfo').style.display = 'none';
-                document.getElementById('taskUrl').value = '';
-                if (player) player.destroy();
-                fetchQueues();
-            } catch (error) {
-                console.error('Submit error:', error);
-                alert('Failed to submit task: ' + error.message);
-            }
-        });
-
+          
+ 
         async function fetchQueues() {
             try {
                 const [waitingRes, finishedRes, statusRes] = await Promise.all([
