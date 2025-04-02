@@ -129,19 +129,60 @@
         function onYouTubeIframeAPIReady() {
             // 留空，player 在 query 时创建
         }
+document.getElementById('queryBtn').addEventListener('click', () => {
+    const url = document.getElementById('taskUrl').value;
+    const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
+    if (!videoIdMatch) {
+        alert('Invalid YouTube URL');
+        return;
+    }
+    const videoId = videoIdMatch[1];
+    const ws = url.includes('watch?v=') ? 'w' : 's';
 
-        document.getElementById('queryBtn').addEventListener('click', () => {
-            const url = document.getElementById('taskUrl').value;
-            const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
-            if (!videoIdMatch) {
-                alert('Invalid YouTube URL');
+    // Call the backend service using fetch
+    fetch(`http://localhost:5000/vinfo?ws=${ws}&videoId=${videoId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'error') {
+                console.error('Error from service:', data.message);
+                alert('Failed to load video info: ' + data.message);
                 return;
             }
-            const videoId = videoIdMatch[1];
-            const ws = url.includes('watch?v=') ? 'w' : 's';
 
-            // 创建 YouTube 播放器
-            if (player) player.destroy(); // 销毁之前的播放器
+            // Extract video info from the response
+            const videoInfoData = data.video_info;
+            const duration = videoInfoData.duration; // Duration in seconds
+
+            // Format duration (seconds -> MM:SS)
+            const minutes = Math.floor(duration / 60);
+            const seconds = Math.floor(duration % 60);
+            const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Display video information
+            const videoInfo = document.getElementById('videoInfo');
+            document.getElementById('videoTitle').textContent = `Title: ${videoInfoData.title || 'Unknown'}`;
+            document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
+            videoInfo.style.display = 'block';
+            videoInfo.dataset.url = url;
+            videoInfo.dataset.ws = ws;
+
+            // Note: The Python script doesn't provide quality levels directly.
+            // If you want to include quality options, you'd need to extend vinfo.py to return format info.
+            // For now, we'll skip the quality select population or leave it as a placeholder.
+            const qualitySelect = document.getElementById('videoQuality');
+            qualitySelect.innerHTML = '<option value="default">Default</option>'; // Placeholder
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Failed to fetch video info');
+        });
+
+        if (player) player.destroy(); // 销毁之前的播放器
             player = new YT.Player('player', {
                 height: '180',
                 width: '320',
@@ -160,6 +201,27 @@
                 }
             });
 
+
+
+    
+});
+
+
+
+
+        
+        document.getElementById('queryBtn').addEventListener('click', () => {
+            const url = document.getElementById('taskUrl').value;
+            const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
+            if (!videoIdMatch) {
+                alert('Invalid YouTube URL');
+                return;
+            }
+            const videoId = videoIdMatch[1];
+            const ws = url.includes('watch?v=') ? 'w' : 's';
+
+            // 创建 YouTube 播放器
+    
             function onPlayerReady(event) {
                 const videoData = player.getVideoData();
                 const duration = player.getDuration();
@@ -226,7 +288,7 @@
                 const [waitingRes, finishedRes, statusRes] = await Promise.all([
                     fetch(`${API_BASE}/queue/waiting`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch waiting queue')),
                     fetch(`${API_BASE}/queue/finished`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch finished queue')),
-                    fetch(`${API_BASE}/status/current`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch current status'))
+                    fetch(`${API_BASE}/queue/running`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch current status'))
                 ]);
 
                 updateWaitingQueue(Array.isArray(waitingRes) ? waitingRes : []);
