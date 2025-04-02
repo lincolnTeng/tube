@@ -140,7 +140,7 @@ document.getElementById('queryBtn').addEventListener('click', () => {
     const ws = url.includes('watch?v=') ? 'w' : 's';
 
     // Call the backend service using fetch
-    fetch(`http://localhost:5000/vinfo?ws=${ws}&videoId=${videoId}`)
+    fetch(`http://pool.bayx.uk:5000/api/vinfo/${ws}/${videoId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
