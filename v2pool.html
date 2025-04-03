@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Download Task Pool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f6f8;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+        }
+        .navbar {
+            background-color: #1a1a1a;
+            padding: 12px 0;
+        }
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #ffffff;
+        }
+        .content-section {
+            padding: 30px 20px;
+            min-height: 80vh;
+        }
+        .task-card {
+            height: 100%;
+            border: none;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .queue-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .list-group-item {
+            border: none;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .task-status {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .submit-area {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .form-check-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        footer {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 15px 0;
+            font-size: 0.85rem;
+        }
+
+        /* Redesigned Video Info Section */
+        .video-info {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fafafa;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+        .video-info .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .video-info .video-meta {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .download-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .download-section select {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+            color: #333;
+            background-color: #ffffff;
+            transition: border-color 0.2s ease;
+        }
+        .download-section select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .download-section button {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+        .download-section button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">YouTube Download Task Pool</a>
+        </div>
+    </nav>
+
+    <div class="container content-section">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="card task-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Waiting Queue</h5>
+                        <ul class="list-group queue-list" id="waitingQueue"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="task-status mb-3" id="currentTaskStatus">
+                    <h5>Current Task Status</h5>
+                    <p id="taskName">No task running</p>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: 0%;" id="taskProgress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+                    <p class="mt-2" id="taskStatusText">Status: Idle</p>
+                </div>
+
+                <div class="submit-area">
+                    <h5>Submit New Task</h5>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="taskUrl" placeholder="Enter YouTube URL">
+                    </div>
+                    <button class="btn btn-primary me-2" id="queryBtn">Query</button>
+
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+                        <label class="form-check-label" for="autoRefreshToggle">Auto Refresh (5s)</label>
+                    </div>
+
+                    <div class="mt-3" id="videoInfo" style="display: none;">
+                        <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
+                        <div class="video-info">
+                            <p class="video-title" id="videoTitle"></p>
+                            <p class="video-meta" id="videoDuration"></p>
+                            <div class="download-section">
+                                <select id="downloadFormat"></select>
+                                <button id="downloadBtn">Download</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card task-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Finished Queue</h5>
+                        <ul class="list-group queue-list" id="finishedQueue"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center">
+        <p>© 2025 YouTube Download Task Pool. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        const API_BASE = '/poolapi';
+        const API_VINFO = '/vinfo';
+
+        function updateWaitingQueue(tasks) {
+            const queue = document.getElementById('waitingQueue');
+            if (!Array.isArray(tasks)) {
+                queue.innerHTML = '<li class="list-group-item">Error loading queue</li>';
+                return;
+            }
+            queue.innerHTML = tasks.map(task => `<li class="list-group-item">Task ${task.id}: ${task.url}</li>`).join('');
+        }
+
+        function updateFinishedQueue(tasks) {
+            const queue = document.getElementById('finishedQueue');
+            if (!Array.isArray(tasks)) {
+                queue.innerHTML = '<li class="list-group-item">Error loading queue</li>';
+                return;
+            }
+            queue.innerHTML = tasks.map(task => `<li class="list-group-item">Task ${task.id}: ${task.title} <a href="${task.downloadLink}" class="float-end">Download</a></li>`).join('');
+        }
+
+        function updateCurrentTask(task) {
+            const taskName = document.getElementById('taskName');
+            const taskProgress = document.getElementById('taskProgress');
+            const taskStatusText = document.getElementById('taskStatusText');
+            if (task) {
+                taskName.textContent = `Task: ${task.title || 'Unknown'}`;
+                taskProgress.style.width = `${task.progress || 0}%`;
+                taskProgress.textContent = `${task.progress || 0}%`;
+                taskStatusText.textContent = `Status: ${task.status || 'Unknown'}`;
+            } else {
+                taskName.textContent = 'No task running';
+                taskProgress.style.width = '0%';
+                taskProgress.textContent = '0%';
+                taskStatusText.textContent = 'Status: Idle';
+            }
+        }
+
+        function onYouTubeIframeAPIReady() {}
+
+        document.getElementById('queryBtn').addEventListener('click', () => {
+            const url = document.getElementById('taskUrl').value;
+            const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
+            if (!videoIdMatch) {
+                alert('Invalid YouTube URL');
+                return;
+            }
+            const videoId = videoIdMatch[1];
+            const ws = url.includes('watch?v=') ? 'w' : 's';
+
+            document.getElementById('ytPlayer').src = `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1`;
+
+            fetch(`${API_VINFO}/${ws}/${videoId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'error') {
+                        alert('Failed to load video info: ' + data.message);
+                        return;
+                    }
+
+                    const videoInfo = data.video_info;
+                    const downloadOptions = data.download_options;
+
+                    const minutes = Math.floor(videoInfo.duration / 60);
+                    const seconds = Math.floor(videoInfo.duration % 60);
+                    const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                    document.getElementById('videoTitle').textContent = videoInfo.title;
+                    document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
+                    document.getElementById('videoInfo').style.display = 'block';
+
+                    const select = document.getElementById('downloadFormat');
+                    select.innerHTML = '';
+                    downloadOptions.forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option.formatId;
+                        opt.textContent = option.resolution;
+                        select.appendChild(opt);
+                    });
+
+                    document.getElementById('downloadBtn').onclick = () => {
+                        const selectedFormat = select.value;
+                        alert(`Download requested for ${videoId} with format: ${selectedFormat}`);
+                    };
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    alert('Failed to fetch video info');
+                });
+        });
+
+        async function fetchQueues() {
+            try {
+                const [waitingRes, finishedRes, statusRes] = await Promise.all([
+                    fetch(`${API_BASE}/queue/waiting`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch waiting queue')),
+                    fetch(`${API_BASE}/queue/finished`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch finished queue')),
+                    fetch(`${API_BASE}/queue/running`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch current status'))
+                ]);
+
+                updateWaitingQueue(Array.isArray(waitingRes) ? waitingRes : []);
+                updateFinishedQueue(Array.isArray(finishedRes) ? finishedRes : []);
+                updateCurrentTask(statusRes.task || null);
+            } catch (error) {
+                console.error('Fetch queues error:', error);
+                updateWaitingQueue([]);
+                updateFinishedQueue([]);
+                updateCurrentTask(null);
+            }
+        }
+
+        let refreshInterval = null;
+        const toggle = document.getElementById('autoRefreshToggle');
+        fetchQueues();
+        toggle.addEventListener('change', function() {
+            if (this.checked) {
+                if (!refreshInterval) {
+                    refreshInterval = setInterval(fetchQueues, 5000);
+                }
+            } else {
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                    refreshInterval = null;
+                }
+            }
+        });
+        if (toggle.checked) {
+            refreshInterval = setInterval(fetchQueues, 5000);
+        }
+    </script>
+</body>
+</html>
