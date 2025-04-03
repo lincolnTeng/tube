@@ -204,54 +204,24 @@ document.getElementById('queryBtn').addEventListener('click', () => {
 
 
 
-        
-      
-    
-// 在全局作用域定义 interval ID
-let refreshInterval;
-
-// 修改 fetchQueues 函数部分
-async function fetchQueues() {
-    try {
-        const [waitingRes, finishedRes, statusRes] = await Promise.all([
-            fetch(`${API_BASE}/queue/waiting`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch waiting queue')),
-            fetch(`${API_BASE}/queue/finished`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch finished queue')),
-            fetch(`${API_BASE}/queue/running`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch current status'))
-        ]);
-
-        updateWaitingQueue(Array.isArray(waitingRes) ? waitingRes : []);
-        updateFinishedQueue(Array.isArray(finishedRes) ? finishedRes : []);
-        updateCurrentTask(statusRes.task || null);
-    } catch (error) {
-        console.error('Fetch queues error:', error);
-        updateWaitingQueue([]);
-        updateFinishedQueue([]);
-        updateCurrentTask(null);
-    }
-}
-// 添加开关控制函数
-function setupAutoRefresh() {
+    let refreshInterval = null;
     const toggle = document.getElementById('autoRefreshToggle');
-    
-    // 初始启动
     fetchQueues();
-    refreshInterval = setInterval(fetchQueues, 5000);
-
-    // 开关事件监听
     toggle.addEventListener('change', function() {
         if (this.checked) {
-            refreshInterval = setInterval(fetchQueues, 5000);
+            if (!refreshInterval) {
+                refreshInterval = setInterval(fetchQueues, 5000);
+            }
         } else {
-            clearInterval(refreshInterval);
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
         }
     });
-}
-
-// 在页面加载时调用
-setupAutoRefresh();
-
-        fetchQueues();
-        setInterval(fetchQueues, 5000);
+    if (toggle.checked) {
+        refreshInterval = setInterval(fetchQueues, 5000);
+    }
     </script>
 </body>
 </html>
