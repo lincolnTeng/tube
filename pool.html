@@ -56,6 +56,15 @@
                         <input type="text" class="form-control" id="taskUrl" placeholder="Enter YouTube URL">
                     </div>
                     <button class="btn btn-primary me-2" id="queryBtn">Query</button>
+
+                        <!-- 添加开关按钮 -->
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+                            <label class="form-check-label" for="autoRefreshToggle">Auto Refresh (5s)</label>
+                        </div>
+
+
+                    
                     <div class="mt-3" id="videoInfo" style="display: none;">
                         <div class="video-player" id="ytPlayer"></div>
                         <div class="video-info">
@@ -198,26 +207,48 @@ document.getElementById('queryBtn').addEventListener('click', () => {
         
       
     
-          
- 
-        async function fetchQueues() {
-            try {
-                const [waitingRes, finishedRes, statusRes] = await Promise.all([
-                    fetch(`${API_BASE}/queue/waiting`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch waiting queue')),
-                    fetch(`${API_BASE}/queue/finished`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch finished queue')),
-                    fetch(`${API_BASE}/queue/running`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch current status'))
-                ]);
+// 在全局作用域定义 interval ID
+let refreshInterval;
 
-                updateWaitingQueue(Array.isArray(waitingRes) ? waitingRes : []);
-                updateFinishedQueue(Array.isArray(finishedRes) ? finishedRes : []);
-                updateCurrentTask(statusRes.task || null);
-            } catch (error) {
-                console.error('Fetch queues error:', error);
-                updateWaitingQueue([]);
-                updateFinishedQueue([]);
-                updateCurrentTask(null);
-            }
+// 修改 fetchQueues 函数部分
+async function fetchQueues() {
+    try {
+        const [waitingRes, finishedRes, statusRes] = await Promise.all([
+            fetch(`${API_BASE}/queue/waiting`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch waiting queue')),
+            fetch(`${API_BASE}/queue/finished`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch finished queue')),
+            fetch(`${API_BASE}/queue/running`).then(res => res.ok ? res.json() : Promise.reject('Failed to fetch current status'))
+        ]);
+
+        updateWaitingQueue(Array.isArray(waitingRes) ? waitingRes : []);
+        updateFinishedQueue(Array.isArray(finishedRes) ? finishedRes : []);
+        updateCurrentTask(statusRes.task || null);
+    } catch (error) {
+        console.error('Fetch queues error:', error);
+        updateWaitingQueue([]);
+        updateFinishedQueue([]);
+        updateCurrentTask(null);
+    }
+}
+// 添加开关控制函数
+function setupAutoRefresh() {
+    const toggle = document.getElementById('autoRefreshToggle');
+    
+    // 初始启动
+    fetchQueues();
+    refreshInterval = setInterval(fetchQueues, 5000);
+
+    // 开关事件监听
+    toggle.addEventListener('change', function() {
+        if (this.checked) {
+            refreshInterval = setInterval(fetchQueues, 5000);
+        } else {
+            clearInterval(refreshInterval);
         }
+    });
+}
+
+// 在页面加载时调用
+setupAutoRefresh();
 
         fetchQueues();
         setInterval(fetchQueues, 5000);
