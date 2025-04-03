@@ -40,11 +40,28 @@ export async function onRequest(context) {
         }
 
         // Extract basic video info
+                "title": info.get('title', 'Unknown'),
+                "channel": info.get('channel', 'Unknown'),
+                "uploader": info.get('uploader', 'Unknown'),
+                "upload_date": info.get('upload_date', 'Unknown'),
+                "duration": info.get('duration', 0),
+                "view_count": info.get('view_count', 0),
+                "like_count": info.get('like_count', 0),
+                "description": info.get('description', 'No description'),
+                "categories": info.get('categories', []),
+                "tags": info.get('tags', []),
+
+
+
+        
         const videoInfo = rawInfo.video_info;
         const basicInfo = {
             title: videoInfo.title,
             duration: videoInfo.duration, // In seconds
-            thumbnail: videoInfo.thumbnail,
+            view: videoInfo.view_count,
+            like: videoInfo.like_count,
+            desc: videoInfo. description ,
+ 
         };
 
         // Filter and map available formats
