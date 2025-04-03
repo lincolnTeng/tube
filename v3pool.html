@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能下载管理器</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-light: #4895ef;
+      --secondary: #3f37c9;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --info: #90e0ef;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --gray-light: #e9ecef;
+      --gray-dark: #343a40;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      color: var(--dark);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-right: auto;
+    }
+    
+    .logo i {
+      margin-right: 0.5rem;
+      font-size: 1.8rem;
+    }
+    
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    
+    .dashboard {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 1.5rem;
+      height: calc(100vh - 8rem);
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+    
+    .card-header {
+      padding: 1rem 1.5rem;
+      background-color: white;
+      border-bottom: 1px solid var(--gray-light);
+      font-weight: 600;
+      color: var(--dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .card-header .badge {
+      background-color: var(--gray-light);
+      color: var(--gray);
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+    }
+    
+    .card-body {
+      padding: 1rem 1.5rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+    
+    .card-footer {
+      padding: 1rem 1.5rem;
+      background-color: white;
+      border-top: 1px solid var(--gray-light);
+    }
+    
+    /* Current Task Section */
+    .current-task {
+      grid-column: span 2;
+    }
+    
+    .task-progress {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+    
+    .task-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .task-thumbnail {
+      width: 120px;
+      height: 68px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .task-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .task-details {
+      flex-grow: 1;
+    }
+    
+    .task-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--dark);
+    }
+    
+    .task-meta {
+      display: flex;
+      gap: 1rem;
+      color: var(--gray);
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .task-meta span {
+      display: flex;
+      align-items: center;
+    }
+    
+    .task-meta i {
+      margin-right: 0.25rem;
+    }
+    
+    .progress-container {
+      background-color: var(--gray-light);
+      border-radius: 8px;
+      height: 8px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+      width: 35%;
+      border-radius: 8px;
+    }
+    
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      color: var(--gray);
+      font-size: 0.85rem;
+    }
+    
+    .task-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--secondary);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--gray-light);
+      color: var(--gray);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--gray-light);
+    }
+    
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #e60e6d;
+    }
+    
+    /* Queue Lists */
+    .queues-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100%;
+    }
+    
+    .queue-card {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .queue-card .card-body {
+      overflow-y: auto;
+      min-height: 0;
+    }
+    
+    .queue-list {
+      list-style: none;
+    }
+    
+    .queue-item {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray-light);
+      display: flex;
+      gap: 1rem;
+      position: relative;
+    }
+    
+    .queue-item:last-child {
+      border-bottom: none;
+    }
+    
+    .queue-item:hover {
+      background-color: #f9fafc;
+    }
+    
+    .item-thumbnail {
+      width: 80px;
+      height: 45px;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .item-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .item-details {
+      flex-grow: 1;
+      min-width: 0;
+    }
+    
+    .item-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.9rem;
+    }
+    
+    .item-meta {
+      color: var(--gray);
+      font-size: 0.8rem;
+    }
+    
+    .item-actions {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .queue-item:hover .item-actions {
+      opacity: 1;
+    }
+    
+    .item-actions button {
+      background: none;
+      border: none;
+      color: var(--gray);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+    
+    .item-actions button:hover {
+      color: var(--primary);
+    }
+    
+    /* Add New Task */
+    .add-task-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .input-control {
+      flex-grow: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--gray-light);
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    
+    .input-control:focus {
+      border-color: var(--primary-light);
+    }
+    
+    .preview-container {
+      background-color: #f9fafc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    
+    .preview-content {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .preview-thumbnail {
+      width: 150px;
+      height: 85px;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .preview-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .preview-details {
+      flex-grow: 1;
+    }
+    
+    .preview-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .preview-meta {
+      display: flex;
+      gap: 1rem;
+      color: var(--gray);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    
+    .quality-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .quality-selector select {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--gray-light);
+      outline: none;
+    }
+    
+    /* Empty States */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--gray);
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--gray-light);
+    }
+    
+    .empty-state h3 {
+      margin-bottom: 0.5rem;
+      color: var(--gray-dark);
+    }
+    
+    .empty-state p {
+      font-size: 0.9rem;
+      max-width: 80%;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--gray-light);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--gray);
+      border-radius: 3px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gray-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-cloud-download-alt"></i>
+        智能下载管理器
+      </div>
+      <button class="theme-toggle">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+    
+    <div class="dashboard">
+      <!-- Current Task Panel -->
+      <div class="card current-task">
+        <div class="card-header">
+          当前下载任务
+          <span class="badge">正在下载</span>
+        </div>
+        <div class="task-progress">
+          <div class="task-info">
+            <div class="task-thumbnail">
+              <img src="/api/placeholder/120/68" alt="视频缩略图">
+            </div>
+            <div class="task-details">
+              <h3 class="task-title">250329 (여자)아이들 소연 (G)I-DLE SOYEON 'TOMBOY' 4K 직캠 FANCAM</h3>
+              <div class="task-meta">
+                <span><i class="fas fa-clock"></i> 时长: 2:33</span>
+                <span><i class="fas fa-eye"></i> 播放: 1,615</span>
+                <span><i class="fas fa-thumbs-up"></i> 赞: 159</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar"></div>
+              </div>
+              <div class="progress-stats">
+                <span>12.4 MB / 35.7 MB</span>
+                <span>1.8 MB/s</span>
+                <span>剩余 12 秒</span>
+              </div>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="btn btn-outline"><i class="fas fa-pause"></i> 暂停</button>
+            <button class="btn btn-outline"><i class="fas fa-folder-open"></i> 打开目录</button>
+            <button class="btn btn-danger"><i class="fas fa-times"></i> 取消</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Add New Task Panel -->
+      <div class="card">
+        <div class="card-header">
+          添加新任务
+        </div>
+        <div class="card-body">
+          <div class="add-task-form">
+            <div class="input-group">
+              <input type="text" class="input-control" placeholder="输入视频链接..." value="https://www.youtube.com/watch?v=fjyAU6cQiUM">
+              <button class="btn btn-primary">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            
+            <div class="preview-container">
+              <div class="preview-header">
+                <span>视频信息预览</span>
+              </div>
+              <div class="preview-content">
+                <div class="preview-thumbnail">
+                  <img src="/api/placeholder/150/85" alt="视频缩略图">
+                </div>
+                <div class="preview-details">
+                  <h4 class="preview-title">250329 (여자)아이들 소연 (G)I-DLE SOYEON 'TOMBOY' 4K 직캠</h4>
+                  <div class="preview-meta">
+                    <span>时长: 2:33</span>
+                    <span>播放: 1,615</span>
+                  </div>
+                  <div class="quality-selector">
+                    <span>选择质量:</span>
+                    <select>
+                      <option value="1080p">1080p</option>
+                      <option value="720p">720p</option>
+                      <option value="480p">480p</option>
+                      <option value="360p">360p</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%;">
+              <i class="fas fa-plus"></i> 添加到下载队列
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Queues Container -->
+      <div class="queues-container">
+        <!-- Waiting Queue Panel -->
+        <div class="card queue-card">
+          <div class="card-header">
+            等待队列
+            <span class="badge">3 项</span>
+          </div>
+          <div class="card-body">
+            <ul class="queue-list">
+              <li class="queue-item">
+                <div class="item-thumbnail">
+                  <img src="/api/placeholder/80/45" alt="视频缩略图">
+                </div>
+                <div class="item-details">
+                  <h4 class="item-title">NewJeans 'Super Shy' 4K Live Performance</h4>
+                  <div class="item-meta">1080p · 62.3 MB · 待处理</div>
+                </div>
+                <div class="item-actions">
+                  <button><i class="fas fa-arrow-up"></i></button>
+                  <button><i class="fas fa-arrow-down"></i></button>
+                  <button><i class="fas fa-trash"></i></button>
+                </div>
+              </li>
+              <li class="queue-item">
+                <div class="item-thumbnail">
+                  <img src="/api/placeholder/80/45" alt="视频缩略图">
+                </div>
+                <div class="item-details">
+                  <h4 class="item-title">IVE 'I AM' Official MV Behind</h4>
+                  <div class="item-meta">720p · 45.7 MB · 待处理</div>
+                </div>
+                <div class="item-actions">
+                  <button><i class="fas fa-arrow-up"></i></button>
+                  <button><i class="fas fa-arrow-down"></i></button>
+                  <button><i class="fas fa-trash"></i></button>
+                </div>
+              </li>
+              <li class="queue-item">
+                <div class="item-thumbnail">
+                  <img src="/api/placeholder/80/45" alt="视频缩略图">
+                </div>
+                <div class="item-details">
+                  <h4 class="item-title">LE SSERAFIM 'UNFORGIVEN' Dance Practice</h4>
+                  <div class="item-meta">1080p · 58.9 MB · 待处理</div>
+                </div>
+                <div class="item-actions">
+                  <button><i class="fas fa-arrow-up"></i></button>
+                  <button><i class="fas fa-arrow-down"></i></button>
+                  <button><i class="fas fa-trash"></i></button>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-outline" style="width: 100%;">
+              <i class="fas fa-trash-alt"></i> 清空队列
+            </button>
+          </div>
+        </div>
+        
+        <!-- Finished Queue Panel -->
+        <div class="card queue-card">
+          <div class="card-header">
+            已完成队列
+            <span class="badge">5 项</span>
+          </div>
+          <div class="card-body">
+            <ul class="queue-list">
+              <li class="queue-item">
+                <div class="item-thumbnail">
+                  <img src="/api/placeholder/80/45" alt="视频缩略图">
+                </div>
+                <div class="item-details">
+                  <h4 class="item-title">aespa 'Supernova' Dance Performance</h4>
+                  <div class="item-meta">1080p · 63.2 MB · 已完成</div>
+                </div>
+                <div class="item-actions">
+                  <button><i class="fas fa-play"></i></button>
+                  <button><i class="fas fa-redo"></i></button>
+                  <button><i class="fas fa-trash"></i></button>
+                </div>
+              </li>
+              <li class="queue-item">
+                <div class="item-thumbnail">
+                  <img src="/api/placeholder/80/45" alt="视频缩略图">
+                </div>
+                <div class="item-details">
+                  <h4 class="item-title">BLACKPINK 'Pink Venom' Live Stage</h4>
+                  <div class="item-meta">720p · 48.5 MB · 已完成</div>
+                </div>
+                <div class="item-actions">
+                  <button><i class="fas fa-play"></i></button>
+                  <button><i class="fas fa-redo"></i></button>
+                  <button><i class="fas fa-trash"></i></button>
+                </div>
+              </li>
+              <li class="queue-item">
+                <div class="item-thumbnail">
+                  <img src="/api/placeholder/80/45" alt="视频缩略图">
+                </div>
+                <div class="item-details">
+                  <h4 class="item-title">TWICE 'The Feels' M/V</h4>
+                  <div class="item-meta">1080p · 86.7 MB · 已完成</div>
+                </div>
+                <div class="item-actions">
+                  <button><i class="fas fa-play"></i></button>
+                  <button><i class="fas fa-redo"></i></button>
+                  <button><i class="fas fa-trash"></i></button>
+                </div>
+              </li>
+              <li class="queue-item">
+                <div class="item-thumbnail">
+                  <img src="/api/placeholder/80/45" alt="视频缩略图">
+                </div>
+                <div class="item-details">
+                  <h4 class="item-title">Red Velvet 'Feel My Rhythm' Performance</h4>
+                  <div class="item-meta">720p · 52.9 MB · 已完成</div>
+                </div>
+                <div class="item-actions">
+                  <button><i class="fas fa-play"></i></button>
+                  <button><i class="fas fa-redo"></i></button>
+                  <button><i class="fas fa-trash"></i></button>
+                </div>
+              </li>
+              <li class="queue-item">
+                <div class="item-thumbnail">
+                  <img src="/api/placeholder/80/45" alt="视频缩略图">
+                </div>
+                <div class="item-details">
+                  <h4 class="item-title">STAYC 'Beautiful Monster' Live Stage</h4>
+                  <div class="item-meta">1080p · 74.3 MB · 已完成</div>
+                </div>
+                <div class="item-actions">
+                  <button><i class="fas fa-play"></i></button>
+                  <button><i class="fas fa-redo"></i></button>
+                  <button><i class="fas fa-trash"></i></button>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-outline" style="width: 100%;">
+              <i class="fas fa-trash-alt"></i> 清空历史
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
