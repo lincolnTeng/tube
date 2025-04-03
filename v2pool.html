@@ -355,9 +355,9 @@ document.getElementById('queryBtn').addEventListener('click', () => {
             // Display video info
             document.getElementById('videoTitle').textContent = videoInfo.title;
             document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
-            document.getElementById('videoViews').querySelector('span:last-child').textContent = videoInfo.view_count.toLocaleString();
-            document.getElementById('videoLikes').querySelector('span:last-child').textContent = videoInfo.like_count.toLocaleString();
-            document.getElementById('videoDesc').textContent = videoInfo.description || 'No description available.';
+            document.getElementById('videoViews').querySelector('span:last-child').textContent = videoInfo.view.toLocaleString();
+            document.getElementById('videoLikes').querySelector('span:last-child').textContent = videoInfo.like.toLocaleString();
+            document.getElementById('videoDesc').textContent = videoInfo.desc || 'No description available.';
             document.getElementById('videoInfo').style.display = 'block';
 
             // Populate download options
