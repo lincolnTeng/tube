@@ -88,6 +88,8 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         const API_BASE = '/poolapi';
+        const API_VINFO= '/vinfo';
+        
         let player;
 
         function updateWaitingQueue(tasks) {
@@ -139,73 +141,56 @@ document.getElementById('queryBtn').addEventListener('click', () => {
     const videoId = videoIdMatch[1];
     const ws = url.includes('watch?v=') ? 'w' : 's';
 
-    // Call the backend service using fetch
-    fetch(`${API_BASE}/vinfo/${ws}/${videoId}`)
+    // Load iframe
+    document.getElementById('ytPlayer').src = `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1`;
+
+    // Fetch video info from Cloudflare Pages
+    fetch(`${API_VINFO}/${ws}/${videoId}`)
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (!response.ok) throw new Error('Network response was not ok');
             return response.json();
         })
         .then(data => {
             if (data.status === 'error') {
-                console.error('Error from service:', data.message);
                 alert('Failed to load video info: ' + data.message);
                 return;
             }
 
-            // Extract video info from the response
-            const videoInfoData = data.video_info;
-            const duration = videoInfoData.duration; // Duration in seconds
+            const videoInfo = data.video_info;
+            const downloadOptions = data.download_options;
 
-            // Format duration (seconds -> MM:SS)
-            const minutes = Math.floor(duration / 60);
-            const seconds = Math.floor(duration % 60);
+            // Format duration
+            const minutes = Math.floor(videoInfo.duration / 60);
+            const seconds = Math.floor(videoInfo.duration % 60);
             const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-            // Display video information
-            const videoInfo = document.getElementById('videoInfo');
-            document.getElementById('videoTitle').textContent = `Title: ${videoInfoData.title || 'Unknown'}`;
+            // Display video info
+            document.getElementById('videoTitle').textContent = videoInfo.title;
             document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
-            videoInfo.style.display = 'block';
-            videoInfo.dataset.url = url;
-            videoInfo.dataset.ws = ws;
+            document.getElementById('videoInfo').style.display = 'block';
 
-            // Note: The Python script doesn't provide quality levels directly.
-            // If you want to include quality options, you'd need to extend vinfo.py to return format info.
-            // For now, we'll skip the quality select population or leave it as a placeholder.
-            const qualitySelect = document.getElementById('videoQuality');
-            qualitySelect.innerHTML = '<option value="default">Default</option>'; // Placeholder
+            // Populate download options
+            const select = document.getElementById('downloadFormat');
+            select.innerHTML = '';
+            downloadOptions.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option.formatId;  // e.g., "c@137+140"
+                opt.textContent = option.resolution;  // e.g., "720p"
+                select.appendChild(opt);
+            });
+
+            // Handle download button click
+            document.getElementById('downloadBtn').onclick = () => {
+                const selectedFormat = select.value;
+                alert(`Download requested for ${videoId} with format: ${selectedFormat}`);
+                // TODO: Implement actual download API call
+            };
         })
         .catch(error => {
             console.error('Fetch error:', error);
             alert('Failed to fetch video info');
         });
-
-        if (player) player.destroy(); // 销毁之前的播放器
-            player = new YT.Player('player', {
-                height: '180',
-                width: '320',
-                videoId: videoId,
-                playerVars: {
-                    'playsinline': 1,
-                    'controls': 1,
-                    'modestbranding': 1
-                },
-                events: {
-               
-                    'onError': (event) => {
-                        console.error('Player error:', event.data);
-                        alert('Failed to load video');
-                    }
-                }
-            });
-
-
-
-    
 });
-
 
 
 
