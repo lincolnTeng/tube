@@ -32,12 +32,21 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        .queue-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
+.task-status {
+    background-color: #ffffff;
+    padding: 25px; /* Slightly more padding for a spacious feel */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+        
+/* Adjust the queue list to have a fixed height with scrollbar */
+.queue-list {
+    max-height: 200px; /* Fixed height for both Waiting and Finished Queues */
+    overflow-y: auto;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
         .list-group-item {
             border: none;
             padding: 12px 15px;
@@ -50,12 +59,13 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        .submit-area {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
+/* Ensure the middle section uses the extra space effectively */
+.submit-area {
+    background-color: #ffffff;
+    padding: 25px; /* Slightly more padding for a spacious feel */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
         .form-control {
             border-radius: 8px;
             border: 1px solid #e0e0e0;
@@ -85,7 +95,7 @@
         }
 
         /* Redesigned Video Info Section */
- /* Video Player (Reduced Size) */
+/* Ensure the video player and info section are balanced in the wider space */
 .video-player {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -95,12 +105,11 @@
 
 /* Video Info Section */
 .video-info {
-    padding: 15px;
+    padding: 20px; /* Slightly more padding for better spacing */
     background-color: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #e5e7eb;
 }
-
 /* Video Title */
 .video-title {
     font-size: 1.1rem;
@@ -184,83 +193,80 @@
         </div>
     </nav>
 
-    <div class="container content-section">
-        <div class="row g-3">
-            <div class="col-md-3">
-                <div class="card task-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Waiting Queue</h5>
-                        <ul class="list-group queue-list" id="waitingQueue"></ul>
+<div class="container content-section">
+    <div class="row g-3">
+        <!-- Middle Section (Wider) -->
+        <div class="col-md-8">
+            <div class="task-status mb-3" id="currentTaskStatus">
+                <h5>Current Task Status</h5>
+                <p id="taskName">No task running</p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" id="taskProgress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+                <p class="mt-2" id="taskStatusText">Status: Idle</p>
+            </div>
+
+            <div class="submit-area">
+                <h5>Submit New Task</h5>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="taskUrl" placeholder="Enter YouTube URL">
+                </div>
+                <button class="btn btn-primary me-2" id="queryBtn">Query</button>
+
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+                    <label class="form-check-label" for="autoRefreshToggle">Auto Refresh (5s)</label>
+                </div>
+
+                <div class="mt-3" id="videoInfoold" style="display: none;"></div>
+
+                <div class="mt-3" id="videoInfo" style="display: none;">
+                    <div class="row">
+                        <!-- Video Player (Reduced Size) -->
+                        <div class="col-md-6">
+                            <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <!-- Video Info and Download Section -->
+                        <div class="col-md-6">
+                            <div class="video-info">
+                                <h6 class="video-title" id="videoTitle"></h6>
+                                <div class="video-meta">
+                                    <p id="videoDuration" class="meta-item"></p>
+                                    <p id="videoViews" class="meta-item"><span class="meta-label">Views:</span> <span></span></p>
+                                    <p id="videoLikes" class="meta-item"><span class="meta-label">Likes:</span> <span></span></p>
+                                </div>
+                                <p class="video-desc" id="videoDesc"></p>
+                                <div class="download-section mt-3">
+                                    <select id="downloadFormat" class="format-select"></select>
+                                    <button id="downloadBtn" class="btn btn-primary ms-2">Download</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-6">
-                <div class="task-status mb-3" id="currentTaskStatus">
-                    <h5>Current Task Status</h5>
-                    <p id="taskName">No task running</p>
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" style="width: 0%;" id="taskProgress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-                    </div>
-                    <p class="mt-2" id="taskStatusText">Status: Idle</p>
-                </div>
-
-                <div class="submit-area">
-                    <h5>Submit New Task</h5>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" id="taskUrl" placeholder="Enter YouTube URL">
-                    </div>
-                    <button class="btn btn-primary me-2" id="queryBtn">Query</button>
-
-                    <div class="form-check form-switch mt-2">
-                        <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
-                        <label class="form-check-label" for="autoRefreshToggle">Auto Refresh (5s)</label>
-                    </div>
-
-                    <div class="mt-3" id="videoInfoold" style="display: none;">
- 
-                    </div>
-
-<div class="mt-3" id="videoInfo" style="display: none;">
-    <div class="row">
-        <!-- Video Player (Reduced Size) -->
-        <div class="col-md-6">
-            <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
         </div>
-        <!-- Video Info and Download Section -->
-        <div class="col-md-6">
-            <div class="video-info">
-                <h6 class="video-title" id="videoTitle"></h6>
-                <div class="video-meta">
-                    <p id="videoDuration" class="meta-item"></p>
-                    <p id="videoViews" class="meta-item"><span class="meta-label">Views:</span> <span></span></p>
-                    <p id="videoLikes" class="meta-item"><span class="meta-label">Likes:</span> <span></span></p>
+
+        <!-- Right Section (Waiting and Finished Queues) -->
+        <div class="col-md-4">
+            <!-- Waiting Queue -->
+            <div class="card task-card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Waiting Queue</h5>
+                    <ul class="list-group queue-list" id="waitingQueue"></ul>
                 </div>
-                <p class="video-desc" id="videoDesc"></p>
-                <div class="download-section mt-3">
-                    <select id="downloadFormat" class="format-select"></select>
-                    <button id="downloadBtn" class="btn btn-primary ms-2">Download</button>
+            </div>
+
+            <!-- Finished Queue -->
+            <div class="card task-card">
+                <div class="card-body">
+                    <h5 class="card-title">Finished Queue</h5>
+                    <ul class="list-group queue-list" id="finishedQueue"></ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-                    
-                    
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card task-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Finished Queue</h5>
-                        <ul class="list-group queue-list" id="finishedQueue"></ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <footer class="text-center">
         <p>© 2025 YouTube Download Task Pool. All rights reserved.</p>
