@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能下载管理器</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f5f7fa;
+      color: #212529;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .container {
+      width: 90%;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #4361ee;
+    }
+
+    .logo i {
+      margin-right: 0.5rem;
+      font-size: 1.8rem;
+    }
+
+    .theme-toggle {
+      font-size: 1.2rem;
+    }
+
+    .card {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+      font-weight: 600;
+    }
+
+    .task-thumbnail img,
+    .item-thumbnail img,
+    .preview-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .task-title {
+      font-weight: 600;
+    }
+
+    .task-meta i,
+    .preview-meta i {
+      margin-right: 0.25rem;
+    }
+
+    .progress {
+      height: 8px;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #4361ee 0%, #4895ef 100%);
+    }
+
+    .queue-item:hover {
+      background-color: #f9fafc;
+    }
+
+    .item-title {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.9rem;
+    }
+
+    .item-actions {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .queue-item:hover .item-actions {
+      opacity: 1;
+    }
+
+    .preview-title {
+      font-weight: 600;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #e9ecef;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #6c757d;
+      border-radius: 3px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #343a40;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="d-flex align-items-center mb-4">
+      <div class="logo">
+        <i class="fas fa-cloud-download-alt"></i>
+        智能下载管理器
+      </div>
+      <button class="btn theme-toggle ms-auto">
+        <i class="fas fa-moon"></i>
+      </button>
+    </header>
+
+    <div class="row g-4">
+      <!-- Left Section (8 columns) -->
+      <div class="col-8">
+        <div class="d-flex flex-column gap-4 h-100">
+          <!-- Current Task -->
+          <div class="card flex-grow-1">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              当前下载任务
+              <span class="badge bg-secondary">正在下载</span>
+            </div>
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="task-thumbnail" style="width: 120px; height: 68px;">
+                  <img src="/api/placeholder/120/68" alt="视频缩略图">
+                </div>
+                <div class="flex-grow-1">
+                  <h3 class="task-title mb-1">250329 (여자)아이들 소연 (G)I-DLE SOYEON 'TOMBOY' 4K 직캠 FANCAM</h3>
+                  <div class="task-meta d-flex gap-3 text-muted small mb-2">
+                    <span><i class="fas fa-clock"></i> 时长: 2:33</span>
+                    <span><i class="fas fa-eye"></i> 播放: 1,615</span>
+                    <span><i class="fas fa-thumbs-up"></i> 赞: 159</span>
+                  </div>
+                  <div class="progress mb-2">
+                    <div class="progress-bar" style="width: 35%;"></div>
+                  </div>
+                  <div class="d-flex justify-content-between text-muted small">
+                    <span>12.4 MB / 35.7 MB</span>
+                    <span>1.8 MB/s</span>
+                    <span>剩余 12 秒</span>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary"><i class="fas fa-pause"></i> 暂停</button>
+                <button class="btn btn-outline-secondary"><i class="fas fa-folder-open"></i> 打开目录</button>
+                <button class="btn btn-danger"><i class="fas fa-times"></i> 取消</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add New Task -->
+          <div class="card">
+            <div class="card-header">添加新任务</div>
+            <div class="card-body">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="输入视频链接..." value="https://www.youtube.com/watch?v=fjyAU6cQiUM">
+                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+              </div>
+              <div class="p-3 bg-light rounded">
+                <div class="text-muted mb-2">视频信息预览</div>
+                <div class="d-flex gap-3">
+                  <div class="preview-thumbnail" style="width: 150px; height: 85px;">
+                    <img src="/api/placeholder/150/85" alt="视频缩略图">
+                  </div>
+                  <div class="flex-grow-1">
+                    <h4 class="preview-title mb-1">250329 (여자)아이들 소연 (G)I-DLE SOYEON 'TOMBOY' 4K 직캠</h4>
+                    <div class="preview-meta d-flex gap-3 text-muted small mb-3">
+                      <span>时长: 2:33</span>
+                      <span>播放: 1,615</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <span>选择质量:</span>
+                      <select class="form-select w-auto">
+                        <option value="1080p">1080p</option>
+                        <option value="720p">720p</option>
+                        <option value="480p">480p</option>
+                        <option value="360p">360p</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary w-100 mt-3"><i class="fas fa-plus"></i> 添加到下载队列</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section (3 columns) -->
+      <div class="col-3">
+        <div class="d-flex flex-column gap-4 h-100">
+          <!-- Waiting Queue -->
+          <div class="card flex-grow-1">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              等待队列
+              <span class="badge bg-secondary">3 项</span>
+            </div>
+            <div class="card-body p-0 overflow-auto">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item queue-item d-flex gap-3 position-relative">
+                  <div class="item-thumbnail" style="width: 80px; height: 45px;">
+                    <img src="/api/placeholder/80/45" alt="视频缩略图">
+                  </div>
+                  <div class="item-details flex-grow-1">
+                    <h4 class="item-title mb-1">NewJeans 'Super Shy' 4K Live Performance</h4>
+                    <div class="item-meta text-muted small">1080p · 62.3 MB · 待处理</div>
+                  </div>
+                  <div class="item-actions position-absolute end-0 top-50 translate-middle-y pe-3 d-flex gap-1">
+                    <button class="btn p-1"><i class="fas fa-arrow-up"></i></button>
+                    <button class="btn p-1"><i class="fas fa-arrow-down"></i></button>
+                    <button class="btn p-1"><i class="fas fa-trash"></i></button>
+                  </div>
+                </li>
+                <li class="list-group-item queue-item d-flex gap-3 position-relative">
+                  <div class="item-thumbnail" style="width: 80px; height: 45px;">
+                    <img src="/api/placeholder/80/45" alt="视频缩略图">
+                  </div>
+                  <div class="item-details flex-grow-1">
+                    <h4 class="item-title mb-1">IVE 'I AM' Official MV Behind</h4>
+                    <div class="item-meta text-muted small">720p · 45.7 MB · 待处理</div>
+                  </div>
+                  <div class="item-actions position-absolute end-0 top-50 translate-middle-y pe-3 d-flex gap-1">
+                    <button class="btn p-1"><i class="fas fa-arrow-up"></i></button>
+                    <button class="btn p-1"><i class="fas fa-arrow-down"></i></button>
+                    <button class="btn p-1"><i class="fas fa-trash"></i></button>
+                  </div>
+                </li>
+                <li class="list-group-item queue-item d-flex gap-3 position-relative">
+                  <div class="item-thumbnail" style="width: 80px; height: 45px;">
+                    <img src="/api/placeholder/80/45" alt="视频缩略图">
+                  </div>
+                  <div class="item-details flex-grow-1">
+                    <h4 class="item-title mb-1">LE SSERAFIM 'UNFORGIVEN' Dance Practice</h4>
+                    <div class="item-meta text-muted small">1080p · 58.9 MB · 待处理</div>
+                  </div>
+                  <div class="item-actions position-absolute end-0 top-50 translate-middle-y pe-3 d-flex gap-1">
+                    <button class="btn p-1"><i class="fas fa-arrow-up"></i></button>
+                    <button class="btn p-1"><i class="fas fa-arrow-down"></i></button>
+                    <button class="btn p-1"><i class="fas fa-trash"></i></button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-outline-secondary w-100"><i class="fas fa-trash-alt"></i> 清空队列</button>
+            </div>
+          </div>
+
+          <!-- Finished Queue -->
+          <div class="card flex-grow-1">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              已完成队列
+              <span class="badge bg-secondary">5 项</span>
+            </div>
+            <div class="card-body p-0 overflow-auto">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item queue-item d-flex gap-3 position-relative">
+                  <div class="item-thumbnail" style="width: 80px; height: 45px;">
+                    <img src="/api/placeholder/80/45" alt="视频缩略图">
+                  </div>
+                  <div class="item-details flex-grow-1">
+                    <h4 class="item-title mb-1">aespa 'Supernova' Dance Performance</h4>
+                    <div class="item-meta text-muted small">1080p · 63.2 MB · 已完成</div>
+                  </div>
+                  <div class="item-actions position-absolute end-0 top-50 translate-middle-y pe-3 d-flex gap-1">
+                    <button class="btn p-1"><i class="fas fa-play"></i></button>
+                    <button class="btn p-1"><i class="fas fa-redo"></i></button>
+                    <button class="btn p-1"><i class="fas fa-trash"></i></button>
+                  </div>
+                </li>
+                <li class="list-group-item queue-item d-flex gap-3 position-relative">
+                  <div class="item-thumbnail" style="width: 80px; height: 45px;">
+                    <img src="/api/placeholder/80/45" alt="视频缩略图">
+                  </div>
+                  <div class="item-details flex-grow-1">
+                    <h4 class="item-title mb-1">BLACKPINK 'Pink Venom' Live Stage</h4>
+                    <div class="item-meta text-muted small">720p · 48.5 MB · 已完成</div>
+                  </div>
+                  <div class="item-actions position-absolute end-0 top-50 translate-middle-y pe-3 d-flex gap-1">
+                    <button class="btn p-1"><i class="fas fa-play"></i></button>
+                    <button class="btn p-1"><i class="fas fa-redo"></i></button>
+                    <button class="btn p-1"><i class="fas fa-trash"></i></button>
+                  </div>
+                </li>
+                <li class="list-group-item queue-item d-flex gap-3 position-relative">
+                  <div class="item-thumbnail" style="width: 80px; height: 45px;">
+                    <img src="/api/placeholder/80/45" alt="视频缩略图">
+                  </div>
+                  <div class="item-details flex-grow-1">
+                    <h4 class="item-title mb-1">TWICE 'The Feels' M/V</h4>
+                    <div class="item-meta text-muted small">1080p · 86.7 MB · 已完成</div>
+                  </div>
+                  <div class="item-actions position-absolute end-0 top-50 translate-middle-y pe-3 d-flex gap-1">
+                    <button class="btn p-1"><i class="fas fa-play"></i></button>
+                    <button class="btn p-1"><i class="fas fa-redo"></i></button>
+                    <button class="btn p-1"><i class="fas fa-trash"></i></button>
+                  </div>
+                </li>
+                <li class="list-group-item queue-item d-flex gap-3 position-relative">
+                  <div class="item-thumbnail" style="width: 80px; height: 45px;">
+                    <img src="/api/placeholder/80/45" alt="视频缩略图">
+                  </div>
+                  <div class="item-details flex-grow-1">
+                    <h4 class="item-title mb-1">Red Velvet 'Feel My Rhythm' Performance</h4>
+                    <div class="item-meta text-muted small">720p · 52.9 MB · 已完成</div>
+                  </div>
+                  <div class="item-actions position-absolute end-0 top-50 translate-middle-y pe-3 d-flex gap-1">
+                    <button class="btn p-1"><i class="fas fa-play"></i></button>
+                    <button class="btn p-1"><i class="fas fa-redo"></i></button>
+                    <button class="btn p-1"><i class="fas fa-trash"></i></button>
+                  </div>
+                </li>
+                <li class="list-group-item queue-item d-flex gap-3 position-relative">
+                  <div class="item-thumbnail" style="width: 80px; height: 45px;">
+                    <img src="/api/placeholder/80/45" alt="视频缩略图">
+                  </div>
+                  <div class="item-details flex-grow-1">
+                    <h4 class="item-title mb-1">STAYC 'Beautiful Monster' Live Stage</h4>
+                    <div class="item-meta text-muted small">1080p · 74.3 MB · 已完成</div>
+                  </div>
+                  <div class="item-actions position-absolute end-0 top-50 translate-middle-y pe-3 d-flex gap-1">
+                    <button class="btn p-1"><i class="fas fa-play"></i></button>
+                    <button class="btn p-1"><i class="fas fa-redo"></i></button>
+                    <button class="btn p-1"><i class="fas fa-trash"></i></button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-outline-secondary w-100"><i class="fas fa-trash-alt"></i> 清空历史</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (optional, for interactive components) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
