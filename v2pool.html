@@ -85,64 +85,96 @@
         }
 
         /* Redesigned Video Info Section */
-        .video-info {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #fafafa;
-            border-radius: 10px;
-            border: 1px solid #e5e7eb;
-        }
-        .video-info .video-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-        .video-info .video-meta {
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 15px;
-        }
-        .video-player {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            overflow: hidden;
-        }
-        .download-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .download-section select {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            font-size: 0.9rem;
-            color: #333;
-            background-color: #ffffff;
-            transition: border-color 0.2s ease;
-        }
-        .download-section select:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-        .download-section button {
-            background-color: #3b82f6;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
-        }
-        .download-section button:hover {
-            background-color: #2563eb;
-        }
+ /* Video Player (Reduced Size) */
+.video-player {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Video Info Section */
+.video-info {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+/* Video Title */
+.video-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+/* Meta Information (Duration, Views, Likes) */
+.video-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.meta-item {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.meta-label {
+    font-weight: 500;
+    color: #4b5563;
+}
+
+/* Video Description */
+.video-desc {
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+/* Download Section */
+.download-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Narrow Format Dropdown */
+.format-select {
+    width: 100px; /* Narrow width to fit content like "1080p" */
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+    color: #333;
+    background-color: #ffffff;
+}
+
+.format-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* Download Button */
+.download-section button {
+    background-color: #3b82f6;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.download-section button:hover {
+    background-color: #2563eb;
+}
     </style>
 </head>
 <body>
@@ -185,7 +217,7 @@
                         <label class="form-check-label" for="autoRefreshToggle">Auto Refresh (5s)</label>
                     </div>
 
-                    <div class="mt-3" id="videoInfo" style="display: none;">
+                    <div class="mt-3" id="videoInfoold" style="display: none;">
                         <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
                         <div class="video-info">
                             <p class="video-title" id="videoTitle"></p>
@@ -196,6 +228,34 @@
                             </div>
                         </div>
                     </div>
+
+<div class="mt-3" id="videoInfo" style="display: none;">
+    <div class="row">
+        <!-- Video Player (Reduced Size) -->
+        <div class="col-md-6">
+            <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <!-- Video Info and Download Section -->
+        <div class="col-md-6">
+            <div class="video-info">
+                <h6 class="video-title" id="videoTitle"></h6>
+                <div class="video-meta">
+                    <p id="videoDuration" class="meta-item"></p>
+                    <p id="videoViews" class="meta-item"><span class="meta-label">Views:</span> <span></span></p>
+                    <p id="videoLikes" class="meta-item"><span class="meta-label">Likes:</span> <span></span></p>
+                </div>
+                <p class="video-desc" id="videoDesc"></p>
+                <div class="download-section mt-3">
+                    <select id="downloadFormat" class="format-select"></select>
+                    <button id="downloadBtn" class="btn btn-primary ms-2">Download</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                    
+                    
                 </div>
             </div>
 
@@ -257,59 +317,70 @@
 
         function onYouTubeIframeAPIReady() {}
 
-        document.getElementById('queryBtn').addEventListener('click', () => {
-            const url = document.getElementById('taskUrl').value;
-            const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
-            if (!videoIdMatch) {
-                alert('Invalid YouTube URL');
+        
+        
+document.getElementById('queryBtn').addEventListener('click', () => {
+    const url = document.getElementById('taskUrl').value;
+    const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
+    if (!videoIdMatch) {
+        alert('Invalid YouTube URL');
+        return;
+    }
+    const videoId = videoIdMatch[1];
+    const ws = url.includes('watch?v=') ? 'w' : 's';
+
+    // Load iframe
+    document.getElementById('ytPlayer').src = `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1`;
+
+    // Fetch video info
+    fetch(`${API_VINFO}/${ws}/${videoId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'error') {
+                alert('Failed to load video info: ' + data.message);
                 return;
             }
-            const videoId = videoIdMatch[1];
-            const ws = url.includes('watch?v=') ? 'w' : 's';
 
-            document.getElementById('ytPlayer').src = `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1`;
+            const videoInfo = data.video_info;
+            const downloadOptions = data.download_options;
 
-            fetch(`${API_VINFO}/${ws}/${videoId}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'error') {
-                        alert('Failed to load video info: ' + data.message);
-                        return;
-                    }
+            // Format duration
+            const minutes = Math.floor(videoInfo.duration / 60);
+            const seconds = Math.floor(videoInfo.duration % 60);
+            const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-                    const videoInfo = data.video_info;
-                    const downloadOptions = data.download_options;
+            // Display video info
+            document.getElementById('videoTitle').textContent = videoInfo.title;
+            document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
+            document.getElementById('videoViews').querySelector('span:last-child').textContent = videoInfo.view_count.toLocaleString();
+            document.getElementById('videoLikes').querySelector('span:last-child').textContent = videoInfo.like_count.toLocaleString();
+            document.getElementById('videoDesc').textContent = videoInfo.description || 'No description available.';
+            document.getElementById('videoInfo').style.display = 'block';
 
-                    const minutes = Math.floor(videoInfo.duration / 60);
-                    const seconds = Math.floor(videoInfo.duration % 60);
-                    const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            // Populate download options
+            const select = document.getElementById('downloadFormat');
+            select.innerHTML = '';
+            downloadOptions.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option.formatId;
+                opt.textContent = option.resolution;
+                select.appendChild(opt);
+            });
 
-                    document.getElementById('videoTitle').textContent = videoInfo.title;
-                    document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
-                    document.getElementById('videoInfo').style.display = 'block';
-
-                    const select = document.getElementById('downloadFormat');
-                    select.innerHTML = '';
-                    downloadOptions.forEach(option => {
-                        const opt = document.createElement('option');
-                        opt.value = option.formatId;
-                        opt.textContent = option.resolution;
-                        select.appendChild(opt);
-                    });
-
-                    document.getElementById('downloadBtn').onclick = () => {
-                        const selectedFormat = select.value;
-                        alert(`Download requested for ${videoId} with format: ${selectedFormat}`);
-                    };
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    alert('Failed to fetch video info');
-                });
+            // Handle download button click
+            document.getElementById('downloadBtn').onclick = () => {
+                const selectedFormat = select.value;
+                alert(`Download requested for ${videoId} with format: ${selectedFormat}`);
+            };
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Failed to fetch video info');
         });
+});
 
         async function fetchQueues() {
             try {
