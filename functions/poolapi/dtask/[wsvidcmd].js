@@ -1,14 +1,7 @@
 // Cloudflare Pages Function: /functions/videoinfo.js
 
 // Format ID mappings from cleanprofile
-const FORMAT_IDS = {
-    audio: ['140', '139'], // Primary audio preference: 140, fallback: 139
-    '720p': ['136', '232', '298', '311', '398', '609', '612'],
-    '1080p': ['137', '270', '299', '312', '399', '614', '616', '617'],
-    '1440p': ['620', '623'],
-    '2160p': ['625', '628']
-};
-
+ 
 export async function onRequest(context) {
     const { request, params } = context;
     const url = new URL(request.url);
@@ -26,7 +19,7 @@ export async function onRequest(context) {
 
     try {
         // Fetch full video info from remote Flask server
-        const response = await fetch(`http://pool.bayx.uk:5000/api/vinfo/${cmdstring }`);
+        const response = await fetch(`http://pool.bayx.uk:5000/api/dtask/${cmdstring }`);
         if (!response.ok) {
             throw new Error(`Failed to fetch video info: ${response.statusText}`);
         }
