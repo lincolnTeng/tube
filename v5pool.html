@@ -223,7 +223,7 @@
                     <button id="downloadBtn" class="btn btn-primary w-100"><i class="fas fa-download me-2"></i>Search Download</button>
                   </div>
                 </div>
-              </div>
+              </div> <div class="row" id="progbar"></div>
             </div>
           </div>
         </div>
@@ -430,7 +430,7 @@
       // Load iframe
       document.getElementById('ytPlayer').src = 
         `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1`;
-
+      startprogbar() ;
       // Fetch video info
       fetch(`${API_VINFO}/${ws}/${videoId}`)
         .then(response => {
@@ -490,12 +490,80 @@
               alert('Please select a format');
             }
           };
+          stopprogbar() ;
         })
         .catch(error => {
           console.error('Fetch error:', error);
           alert('Failed to fetch video info');
         });
+        
     }
+// procbar part
+
+        const PROCBAR_WIDTH = 300;
+
+        let currentWidth = 0;
+        let cudelay = 100;
+        let nextCheck = PROCBAR_WIDTH / 2;
+        let progisRunning = false;
+        let framediv ;
+        let linediv ;
+    
+  function startprogbar() {
+
+     if( progisRunning ) return ;
+
+     const progdiv  = document.getElementById('progbar');
+
+     framediv  = document.createElement('div');
+     framediv.setAttribute('id', 'progframe');
+     framediv.setAttribute('class', 'progframe');
+
+     progdiv.appendChild(framediv);
+
+     linediv  = document.createElement('div');
+     linediv.setAttribute('id', 'progline');
+     linediv.setAttribute('class', 'progline');
+
+     framediv.appendChild(linediv);
+         currentWidth = 0;
+            cudelay = 100;
+            nextCheck = PROCBAR_WIDTH / 2;
+            linediv.style.width = '0px';
+            progisRunning = true;
+
+            setTimeout(progstep, cudelay);
+
+   }
+
+   function progstep () {
+            if (currentWidth < PROCBAR_WIDTH && progisRunning) {
+                currentWidth += 1;
+                linediv.style.width = currentWidth + 'px';
+
+                if (currentWidth >= nextCheck ) {
+                    cudelay *= 2;
+                    const remaining = PROCBAR_WIDTH - currentWidth;
+                    nextCheck = currentWidth + (remaining / 2);
+
+                }
+
+                setTimeout(progstep, cudelay);
+            }
+        }
+
+
+   function stopprogbar() {
+     if( !progisRunning  ) return ;
+     progisRunning = false ;
+     linediv.style.width = currentWidth + 'px';
+     jsleep(2000) ;
+     const progdiv  = document.getElementById('progbar');
+     progdiv. innerHTML = '' ;
+   }
+
+
+    
   </script>
 </body>
 </html>
