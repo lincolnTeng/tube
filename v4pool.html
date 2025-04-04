@@ -115,9 +115,9 @@
                 <input type="text" id="taskUrl" class="form-control" placeholder="video url..." value="https://www.youtube.com/watch?v=fjyAU6cQiUM">
                 <button class="btn btn-primary" onclick="loadvideoinfo()" > <i class="fas fa-search"></i></button>
               </div>
-              <div class="p-3 bg-light rounded" id ="videoInfo" style="display: none;" >
+              <div class="p-3 bg-light rounded" id ="videoInfo"   >
                 <div class="text-muted mb-2">video info</div>
-                <div class="d-flex gap-3">
+                <div class="d-flex gap-1">
                   <div class="col-md-5"  >
                     <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
                   </div>
@@ -126,14 +126,14 @@
                                 <h6 class="video-title" id="videoTitle"></h6>
                                 <div class="video-meta">
                                 
-                                    <i id="videoDuration" class="bi bi-clock"></i>
-                                    <i id="videoViews" class="bi bi-eye">  <span></span></i>
-                                    <i id="videoLikes" class="bi bi-heart" >  <span></span></i>
+                                    <i  class="bi bi-clock"></i><span id="videoDuration"></span>
+                                    <i class="bi bi-eye">  </i><span id="videoViews"  ></span> 
+                                    <i class="bi bi-heart" > </i><span id="videoLikes" ></span> 
                                 </div>
                                 <p class="video-desc" id="videoDesc"></p>
                                 <div class="download-section mt-3">
                                     <select id="downloadFormat" class="format-select"></select>
-                                    <button id="downloadBtn" class="btn btn-primary ms-2">Download</button>
+                                    <button id="downloadBtn" class="btn btn-primary ms-2">search download</button>
                                 </div>
                              
                   </div>
@@ -339,10 +339,10 @@ async function loadvideoinfo() {
             // Display video info
             document.getElementById('videoTitle').textContent = videoInfo.title;
             document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
-            document.getElementById('videoViews').querySelector('span:last-child').textContent = videoInfo.view.toLocaleString();
-            document.getElementById('videoLikes').querySelector('span:last-child').textContent = videoInfo.like.toLocaleString();
+            document.getElementById('videoViews'). textContent = videoInfo.view.toLocaleString();
+            document.getElementById('videoLikes'). extContent = videoInfo.like.toLocaleString();
    //         document.getElementById('videoDesc').textContent = videoInfo.desc || 'No description available.';
-            document.getElementById('videoInfo').style.display = 'block';
+            //document.getElementById('videoInfo').style.display = 'block';
 
             // Populate download options
             const select = document.getElementById('downloadFormat');
