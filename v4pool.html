@@ -9,106 +9,50 @@
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #f5f7fa;
-      color: #212529;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    body {      background-color: #f5f7fa;     color: #212529;     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    
+    .logo {  display: flex;      align-items: center;      font-size: 1.5rem;      font-weight: 700;      color: #4361ee;    }
 
-   
+    .logo i {      margin-right: 0.5rem;      font-size: 1.8rem;    }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #4361ee;
-    }
+    .theme-toggle {      font-size: 1.2rem;    }
 
-    .logo i {
-      margin-right: 0.5rem;
-      font-size: 1.8rem;
-    }
+    .card {      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);   }
 
-    .theme-toggle {
-      font-size: 1.2rem;
-    }
-
-    .card {
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    }
-
-    .card-header {
-      font-weight: 600;
-    }
+    .card-header {      font-weight: 600;   }
 
     .task-thumbnail img,
     .item-thumbnail img,
-    .preview-thumbnail img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .preview-thumbnail img {   width: 100%;      height: 100%;      object-fit: cover;    }
 
-    .task-title {
-      font-weight: 600;
-    }
+    .task-title {      font-weight: 600;    }
 
     .task-meta i,
-    .preview-meta i {
-      margin-right: 0.25rem;
-    }
+    .preview-meta i {      margin-right: 0.25rem;    }
 
-    .progress {
-      height: 8px;
-    }
+    .progress {      height: 8px;  }
 
-    .progress-bar {
-      background: linear-gradient(90deg, #4361ee 0%, #4895ef 100%);
-    }
+    .progress-bar {      background: linear-gradient(90deg, #4361ee 0%, #4895ef 100%); }
 
-    .queue-item:hover {
-      background-color: #f9fafc;
-    }
+    .queue-item:hover {      background-color: #f9fafc;    }
 
-    .item-title {
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-size: 0.9rem;
-    }
+    .item-title {      font-weight: 500;  white-space: nowrap;      overflow: hidden;      text-overflow: ellipsis;      font-size: 0.9rem;    }
 
-    .item-actions {
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
+    .item-actions {      opacity: 0;      transition: opacity 0.2s ease;   }
 
-    .queue-item:hover .item-actions {
-      opacity: 1;
-    }
+    .queue-item:hover .item-actions {      opacity: 1;  }
 
-    .preview-title {
-      font-weight: 600;
-    }
+    .preview-title {      font-weight: 600; }
 
     /* Scrollbar styling */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
+    ::-webkit-scrollbar {      width: 6px;}
     
-    ::-webkit-scrollbar-track {
-      background: #e9ecef;
-    }
+    ::-webkit-scrollbar-track {      background: #e9ecef;}
     
-    ::-webkit-scrollbar-thumb {
-      background: #6c757d;
-      border-radius: 3px;
-    }
+    ::-webkit-scrollbar-thumb {      background: #6c757d;  border-radius: 3px;}
     
-    ::-webkit-scrollbar-thumb:hover {
-      background: #343a40;
-    }
+    ::-webkit-scrollbar-thumb:hover {      background: #343a40; }\
+    
   </style>
 </head>
 <body>
@@ -130,20 +74,20 @@
           <!-- Current Task -->
           <div class="card flex-grow-1">
             <div class="card-header d-flex justify-content-between align-items-center">
-              当前下载任务
-              <span class="badge bg-secondary">正在下载</span>
+              current task
+              <span class="badge bg-secondary">searching </span>
             </div>
             <div class="card-body">
               <div class="d-flex align-items-center gap-3 mb-3">
                 <div class="task-thumbnail" style="width: 120px; height: 68px;">
-                  <img src="/api/placeholder/120/68" alt="视频缩略图">
+                  <img src="/api/placeholder/120/68" alt="thumb">
                 </div>
                 <div class="flex-grow-1">
                   <h3 class="task-title mb-1">250329 (여자)아이들 소연 (G)I-DLE SOYEON 'TOMBOY' 4K 직캠 FANCAM</h3>
                   <div class="task-meta d-flex gap-3 text-muted small mb-2">
-                    <span><i class="fas fa-clock"></i> 时长: 2:33</span>
-                    <span><i class="fas fa-eye"></i> 播放: 1,615</span>
-                    <span><i class="fas fa-thumbs-up"></i> 赞: 159</span>
+                    <span><i class="fas fa-clock"></i> duration: 2:33</span>
+                    <span><i class="fas fa-eye"></i> view: 1,615</span>
+                    <span><i class="fas fa-thumbs-up"></i>like: 159</span>
                   </div>
                   <div class="progress mb-2">
                     <div class="progress-bar" style="width: 35%;"></div>
@@ -165,33 +109,32 @@
 
           <!-- Add New Task -->
           <div class="card">
-            <div class="card-header">添加新任务</div>
+            <div class="card-header">new task</div>
             <div class="card-body">
               <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="输入视频链接..." value="https://www.youtube.com/watch?v=fjyAU6cQiUM">
-                <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+                <input type="text" id="taskUrl" class="form-control" placeholder="video url..." value="https://www.youtube.com/watch?v=fjyAU6cQiUM">
+                <button class="btn btn-primary" onclick="loadvideoinfo()" > <i class="fas fa-search"></i></button>
               </div>
               <div class="p-3 bg-light rounded">
-                <div class="text-muted mb-2">视频信息预览</div>
+                <div class="text-muted mb-2">video info</div>
                 <div class="d-flex gap-3">
                   <div class="preview-thumbnail" style="width: 150px; height: 85px;">
-                    <img src="/api/placeholder/150/85" alt="视频缩略图">
+                    <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
                   </div>
-                  <div class="flex-grow-1">
-                    <h4 class="preview-title mb-1">250329 (여자)아이들 소연 (G)I-DLE SOYEON 'TOMBOY' 4K 직캠</h4>
-                    <div class="preview-meta d-flex gap-3 text-muted small mb-3">
-                      <span>时长: 2:33</span>
-                      <span>播放: 1,615</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                      <span>选择质量:</span>
-                      <select class="form-select w-auto">
-                        <option value="1080p">1080p</option>
-                        <option value="720p">720p</option>
-                        <option value="480p">480p</option>
-                        <option value="360p">360p</option>
-                      </select>
-                    </div>
+                  <div class="flex-grow-1 col-md-6">
+                               
+                                <h6 class="video-title" id="videoTitle"></h6>
+                                <div class="video-meta">
+                                    <p id="videoDuration" class="meta-item"></p>
+                                    <p id="videoViews" class="meta-item"><span class="meta-label">Views:</span> <span></span></p>
+                                    <p id="videoLikes" class="meta-item"><span class="meta-label">Likes:</span> <span></span></p>
+                                </div>
+                                <p class="video-desc" id="videoDesc"></p>
+                                <div class="download-section mt-3">
+                                    <select id="downloadFormat" class="format-select"></select>
+                                    <button id="downloadBtn" class="btn btn-primary ms-2">Download</button>
+                                </div>
+                             
                   </div>
                 </div>
               </div>
@@ -352,5 +295,76 @@
 
   <!-- Bootstrap JS (optional, for interactive components) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        const API_BASE = '/poolapi';
+        const API_VINFO = '/vinfo';
+
+async function loadvideoinfo() {
+    const url = document.getElementById('taskUrl').value;
+    const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
+    if (!videoIdMatch) {
+        alert('Invalid YouTube URL');
+        return;
+    }
+    const videoId = videoIdMatch[1];
+    const ws = url.includes('watch?v=') ? 'w' : 's';
+
+    // Load iframe
+    document.getElementById('ytPlayer').src = 
+         `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1`;
+
+    // Fetch video info
+    fetch(`${API_VINFO}/${ws}/${videoId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'error') {
+                alert('Failed to load video info: ' + data.message);
+                return;
+            }
+
+            const videoInfo = data.video_info;
+            const downloadOptions = data.download_options;
+
+            // Format duration
+            const minutes = Math.floor(videoInfo.duration / 60);
+            const seconds = Math.floor(videoInfo.duration % 60);
+            const formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // Display video info
+            document.getElementById('videoTitle').textContent = videoInfo.title;
+            document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
+            document.getElementById('videoViews').querySelector('span:last-child').textContent = videoInfo.view.toLocaleString();
+            document.getElementById('videoLikes').querySelector('span:last-child').textContent = videoInfo.like.toLocaleString();
+            document.getElementById('videoDesc').textContent = videoInfo.desc || 'No description available.';
+            document.getElementById('videoInfo').style.display = 'block';
+
+            // Populate download options
+            const select = document.getElementById('downloadFormat');
+            select.innerHTML = '';
+            downloadOptions.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option.formatId;
+                opt.textContent = option.resolution;
+                select.appendChild(opt);
+            });
+
+            // Handle download button click
+            document.getElementById('downloadBtn').onclick = () => {
+                const selectedFormat = select.value;
+                alert(`Download requested for ${videoId} with format: ${selectedFormat}`);
+            };
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Failed to fetch video info');
+        });
+}
+ 
+</script>
+
+</body></html>
