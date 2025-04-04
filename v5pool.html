@@ -240,7 +240,7 @@
                     <div id="formatOptions" class="d-flex flex-wrap gap-2 mb-3">
                       <!-- Format options will be inserted here -->
                     </div>
-                    <button id="downloadBtn" class="btn btn-primary w-100"><i class="fas fa-download me-2"></i>Search Download</button>
+                    <button id="downloadBtn" class="btn btn-primary w-100" onclick="submittask()" ><i class="fas fa-download me-2"></i>Search Download</button>
                   </div>
                 </div>
               </div> 
@@ -436,7 +436,31 @@
   <script>
     const API_BASE = '/poolapi';
     const API_VINFO = '/vinfo';
+    let gvideoid='' ;
+    let gws = '' ;
+    
+    async function submittask() {
+      
+            const selectedFormat = document.querySelector('.format-option.selected');
+            if (selectedFormat) {
+              const formatId = selectedFormat.getAttribute('data-format');
+              alert(`Download requested for ${videoId} with format: ${formatId}`);
+            } else {
+              alert('Please select a format');
+            }
+            startprogbar() ;
+            const fre= await fetch ( `${API_TASK}/${gws}/${gvideoid}/${formatId}`) ; 
+            if( fre.ok ){
+                  document.getElementById('statusline').textContent = await fre.text();
+             }
+            else {
+                  document.getElementById('statusline').textContent = "submit task failro !" ;               
+            }
+            stopprogbar() ;
+      
+    }
 
+    
     async function loadvideoinfo() {
       const url = document.getElementById('taskUrl').value;
       const videoIdMatch = url.match(/(?:v=|shorts\/)([a-zA-Z0-9_-]{11})/);
@@ -446,7 +470,8 @@
       }
       const videoId = videoIdMatch[1];
       const ws = url.includes('watch?v=') ? 'w' : 's';
-
+      gvideoid = videoId ;
+      gws = ws ;
       // Load iframe
       document.getElementById('ytPlayer').src = 
         `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1`;
