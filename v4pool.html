@@ -115,13 +115,13 @@
                 <input type="text" id="taskUrl" class="form-control" placeholder="video url..." value="https://www.youtube.com/watch?v=fjyAU6cQiUM">
                 <button class="btn btn-primary" onclick="loadvideoinfo()" > <i class="fas fa-search"></i></button>
               </div>
-              <div class="p-3 bg-light rounded">
+              <div class="p-3 bg-light rounded" id ="videoInfo" style="display: none;" >
                 <div class="text-muted mb-2">video info</div>
                 <div class="d-flex gap-3">
                   <div class="col-md-5"  >
                     <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
                   </div>
-                  <div class="flex-grow-1 col-md-7">
+                  <div class="flex-grow-1 col-md-7"   >
                                
                                 <h6 class="video-title" id="videoTitle"></h6>
                                 <div class="video-meta">
