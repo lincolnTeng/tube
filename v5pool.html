@@ -478,7 +478,8 @@
           // Select first option by default
           if (formatContainer.firstChild) {
             formatContainer.firstChild.classList.add('selected');
-          }
+          }  
+          stopprogbar() ; 
 
           // Handle download button click
           document.getElementById('downloadBtn').onclick = () => {
@@ -490,7 +491,7 @@
               alert('Please select a format');
             }
           };
-          stopprogbar() ;
+          
         })
         .catch(error => {
           console.error('Fetch error:', error);
