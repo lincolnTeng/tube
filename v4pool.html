@@ -51,7 +51,7 @@
     
     ::-webkit-scrollbar-thumb {      background: #6c757d;  border-radius: 3px;}
     
-    ::-webkit-scrollbar-thumb:hover {      background: #343a40; }\
+    ::-webkit-scrollbar-thumb:hover {      background: #343a40; }
     
   </style>
 </head>
@@ -125,9 +125,10 @@
                                
                                 <h6 class="video-title" id="videoTitle"></h6>
                                 <div class="video-meta">
-                                    <p id="videoDuration" class="meta-item"></p>
-                                    <p id="videoViews" class="meta-item"><span class="meta-label">Views:</span> <span></span></p>
-                                    <p id="videoLikes" class="meta-item"><span class="meta-label">Likes:</span> <span></span></p>
+                                
+                                    <i id="videoDuration" class="bi bi-clock"></i>
+                                    <i id="videoViews" class="bi bi-eye">  <span></span></i>
+                                    <i id="videoLikes" class="bi bi-heart" >  <span></span></i>
                                 </div>
                                 <p class="video-desc" id="videoDesc"></p>
                                 <div class="download-section mt-3">
@@ -340,7 +341,7 @@ async function loadvideoinfo() {
             document.getElementById('videoDuration').textContent = `Duration: ${formattedDuration}`;
             document.getElementById('videoViews').querySelector('span:last-child').textContent = videoInfo.view.toLocaleString();
             document.getElementById('videoLikes').querySelector('span:last-child').textContent = videoInfo.like.toLocaleString();
-            document.getElementById('videoDesc').textContent = videoInfo.desc || 'No description available.';
+   //         document.getElementById('videoDesc').textContent = videoInfo.desc || 'No description available.';
             document.getElementById('videoInfo').style.display = 'block';
 
             // Populate download options
