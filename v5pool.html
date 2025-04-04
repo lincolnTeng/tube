@@ -452,7 +452,8 @@
             startprogbar() ;
             const fre= await fetch ( `${API_TASK}/${gws}@${gvideoid}@${formatId}`) ; 
             if( fre.ok ){
-                  document.getElementById('statusline').textContent = await fre.text();
+                  const resjson = await fre.json() ;
+                  document.getElementById('statusline').textContent = resjson.retext ;
              }
             else {
                   document.getElementById('statusline').textContent = "submit task failro !" ;               
