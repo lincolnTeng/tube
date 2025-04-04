@@ -508,6 +508,11 @@
         let progisRunning = false;
         let framediv ;
         let linediv ;
+
+function jsleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
     
   function startprogbar() {
 
