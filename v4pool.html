@@ -124,9 +124,9 @@
                   <div class="col-md-5"  >
                     <iframe class="video-player" id="ytPlayer" frameborder="0" allowfullscreen></iframe>
                   </div>
-                  <div class="flex-grow-1 col-md-7"   >
+                  <div class="flex-grow-1 col-md-7"  id="infobox" style="display: none;" >
                                
-                                <B><h6 class="item-title" id="videoTitle"></h6></B>
+                                 <h6 class="task-title mb-1" id="videoTitle"></h6> 
                                 <div class="video-meta">
                                 
                                     <i  class="bi bi-clock"></i><span id="videoDuration"></span>
@@ -345,7 +345,7 @@ async function loadvideoinfo() {
             document.getElementById('videoViews'). textContent = videoInfo.view.toLocaleString();
             document.getElementById('videoLikes'). textContent = videoInfo.like.toLocaleString();
    //         document.getElementById('videoDesc').textContent = videoInfo.desc || 'No description available.';
-            //document.getElementById('videoInfo').style.display = 'block';
+            document.getElementById('infobox').style.display = 'block';
 
             // Populate download options
             const select = document.getElementById('downloadFormat');
