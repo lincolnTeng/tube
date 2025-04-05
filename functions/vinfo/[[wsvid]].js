@@ -107,7 +107,24 @@ export async function onRequest(context) {
 
         basicInfo.fmt = downloadOptions ; 
         basicInfo.ws = ws ; 
-        await env.KVPROF.put( videoId, JSON.stringify(basicInfo));
+ //       await env.KVPROF.put( videoId, JSON.stringify(basicInfo));
+
+try {
+    await env.KVPROF.put(videoId, JSON.stringify(basicInfo));
+} catch (error) {
+    console.error("Error writing to KV:", error);
+    return new Response(JSON.stringify({
+        status: 'error',
+        message: `Error writing to KV: ${error.message}`
+    }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+    });
+}
+
+
+
+
         
         return new Response( stres , {
             status: 200,
