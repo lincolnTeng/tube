@@ -45,7 +45,7 @@ export async function onRequest(context) {
 
         
         const videoInfo = rawInfo.video_info;
-        const basicInfo = {
+        let basicInfo = {
             title: videoInfo.title,
             duration: videoInfo.duration, // In seconds
             view: videoInfo.view_count,
