@@ -95,6 +95,7 @@ export async function onRequest(context) {
                 }
             }
         }
+        
 
         // Construct the filtered response
         const filteredResponse = {
@@ -102,8 +103,13 @@ export async function onRequest(context) {
             video_info: basicInfo,
             download_options: downloadOptions
         };
+        const stres = JSON.stringify(filteredResponse) ; 
 
-        return new Response(JSON.stringify(filteredResponse), {
+        basicInfo.fmt = downloadOptions ; 
+        basicInfo.ws = ws ; 
+        await env.KVPROF.put( videoId, JSON.stringify(basicInfo));
+        
+        return new Response( stres , {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });
