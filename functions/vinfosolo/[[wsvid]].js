@@ -9,10 +9,10 @@ const FORMAT_IDS = {
     '2160p': ['625', '628']
 };
 
-export async function onRequest(context) {
-    const { request, params } = context;
-    const url = new URL(request.url);
-    let [ws,videoId] = context.params.wsvid;
+export async function onRequest(    { params, env }) {
+ //   const { request, params } = context;
+ //   const url = new URL(request.url);
+    let [ws,videoId] = params.wsvid;
 
     if (!ws || !videoId) {
         return new Response(JSON.stringify({
