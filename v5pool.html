@@ -243,7 +243,7 @@
                     <button id="downloadBtn" class="btn btn-primary w-100" onclick="submittask()" ><i class="fas fa-download me-2"></i>Search Download</button>
                   </div>
                 </div>
-              </div> 
+              </div> <div id="statusline"></div>
             </div><div class="row col-12" id="progbar"></div>
           </div>
         </div>
@@ -449,19 +449,65 @@
             } else {
               alert('Please select a format');
             }
+            const taskData = {
+              vid: gvideoid,
+              vcmd: `${formatId}`, // 假设下载任务
+               ws: gws
+            };
             startprogbar() ;
-            const fre= await fetch ( `${API_TASK}/${gws}@${gvideoid}@${formatId}`) ; 
-            if( fre.ok ){
-                  const resjson = await fre.json() ;
-                  document.getElementById('statusline').textContent = resjson.retext ;
-             }
-            else {
-                  document.getElementById('statusline').textContent = "submit task failro !" ;               
-            }
+
+            try {
+                  const fre = await fetch('/poolapi/sendtask', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(taskData)
+                  });
+          
+                  if (fre.ok) {
+                      const resjson = await fre.json();
+                      document.getElementById('statusline').textContent = resjson.message || "Task submitted successfully";
+                      // 提交成功后启动状态轮询
+                      pollTaskStatus(gvideoid, `${formatId}`);
+                  } else {
+                      document.getElementById('statusline').textContent = "Submit task failed!";
+                  }
+              } catch (error) {
+                  document.getElementById('statusline').textContent = `Error: ${error.message}`;
+              }
+          
             stopprogbar() ;
+ 
       
     }
+async function pollTaskStatus(vid, vcmd) {
+    const taskId = `${vid}@${vcmd}`; // 构造 mission_id，例如 "somevidxx@d@137"
+    const statusLine = document.getElementById('statusline');
 
+    const checkStatus = async () => {
+        try {
+            const response = await fetch(`/poolapi/task/${taskId}`);
+            if (response.ok) {
+                const statusData = await response.json();
+                statusLine.textContent = `Status: ${statusData.status}`;
+
+                if (statusData.status === "task over") {
+                    clearInterval(pollInterval); // 停止轮询
+                    statusLine.textContent += ` - File: ${statusData.result_file || 'N/A'}`;
+                } else if (statusData.status === "task failed" || statusData.status === "not_found") {
+                    clearInterval(pollInterval); // 停止轮询
+                }
+            } else {
+                statusLine.textContent = "Failed to check status";
+            }
+        } catch (error) {
+            statusLine.textContent = `Polling error: ${error.message}`;
+        }
+    };
+
+    // 每 2 秒检查一次状态
+    const pollInterval = setInterval(checkStatus, 2000);
+    checkStatus(); // 立即检查一次
+}
     
     async function loadvideoinfo() {
       const url = document.getElementById('taskUrl').value;
