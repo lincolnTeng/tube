@@ -26,7 +26,7 @@ export async function onRequest(    { params, env }) {
 
     try {
         // Fetch full video info from remote Flask server
-        const response = await fetch(`http://pool.bayx.uk:5001/api/vinfo/${ws}/${videoId}`);
+        const response = await fetch(`http://pool.bayx.uk/tuapi/vinfo/${ws}/${videoId}`);
       //  if (!response.ok) {
         //    throw new Error(`Failed to fetch video info: ${response.statusText}`);
        // }
