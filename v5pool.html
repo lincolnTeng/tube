@@ -445,9 +445,10 @@
             const selectedFormat = document.querySelector('.format-option.selected');
             if (selectedFormat) {
               const formatId = selectedFormat.getAttribute('data-format');
-              alert(`Download requested for ${videoId} with format: ${formatId}`);
+              alert(`Download requested for ${gvideoId} with format: ${formatId}`);
             } else {
               alert('Please select a format');
+              return ;
             }
             const taskData = {
               vid: gvideoid,
