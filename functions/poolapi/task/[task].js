@@ -14,7 +14,8 @@ export async function onRequest(context) {
 
     try {
         // 调用 taskstatus.py 的 /task_status/<taskid> 接口
-        const response = await fetch(`http://pool.bayx.uk/tuapi3/taskstatus/${taskId}`, {
+        const vdir = new Date().getFullYear().toString().slice(-2) + String(new Date().getMonth() + 1).padStart(2, '0');
+        const response = await fetch(`http://pool.bayx.uk/tuapi3/taskstatus/${vdir}@${taskId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         });
