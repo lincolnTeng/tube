@@ -14,7 +14,7 @@ export async function onRequest(context) {
 
     try {
         // 调用 taskstatus.py 的 /task_status/<taskid> 接口
-        const response = await fetch(`http://pool.bayx.uk/tuapi/taskstatus/${taskId}`, {
+        const response = await fetch(`http://pool.bayx.uk/tuapi3/taskstatus/${taskId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
         });
