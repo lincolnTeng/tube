@@ -16,7 +16,7 @@ export async function onRequest(context) {
         }
 
         // 发送任务到 runtask.py
-        const response = await fetch("http://pool.bayx.uk/tuapi/runtask/", {
+        const response = await fetch("http://pool.bayx.uk/tuapi2/runtask/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(taskData)
