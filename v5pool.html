@@ -440,16 +440,8 @@
     let gvideoid='' ;
     let gws = '' ;
     
-    async function submittask() {
-      
-            const selectedFormat = document.querySelector('.format-option.selected');
-            if (selectedFormat) {
-              const formatId = selectedFormat.getAttribute('data-format');
-     
-            } else {
-              alert('Please select a format');
-              return ;
-            }
+    async function submitTask(videoId, formatId) {
+       
             const taskData = {
               vid: gvideoid,
               vcmd: `${formatId}`, // 假设下载任务
@@ -480,6 +472,9 @@
  
       
     }
+
+
+    
 async function pollTaskStatus(vid, vcmd) {
     const taskId = `${vid}@${vcmd}`; // 构造 mission_id，例如 "somevidxx@d@137"
     const statusLine = document.getElementById('statusline');
@@ -577,13 +572,14 @@ async function pollTaskStatus(vid, vcmd) {
 
           // Handle download button click
           document.getElementById('downloadBtn').onclick = () => {
-            const selectedFormat = document.querySelector('.format-option.selected');
-            if (selectedFormat) {
-              const formatId = selectedFormat.getAttribute('data-format');
-              alert(`Download requested for ${videoId} with format: ${formatId}`);
-            } else {
-              alert('Please select a format');
-            }
+                const selectedFormat = document.querySelector('.format-option.selected');
+                if (selectedFormat) {
+                    const formatId = selectedFormat.getAttribute('data-format');
+                    // 调用已定义的 submitTask 函数，传递 videoId 和 formatId
+                    submitTask(videoId, formatId);
+                } else {
+                    alert('Please select a format');
+                }
           };
           
         })
