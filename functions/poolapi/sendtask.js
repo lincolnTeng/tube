@@ -2,8 +2,10 @@ export async function onRequest(context) {
     const { request } = context;
 
     try {
-        const taskData = await request.json(); // 获取前端发送的 JSON
-        if (!taskData.vid || !taskData.vcmd || !taskData.vdir || !taskData.ws) {
+        let taskData = await request.json(); // 获取前端发送的 JSON
+        const vdir = new Date().getFullYear().toString().slice(-2) + String(new Date().getMonth() + 1).padStart(2, '0');
+        taskData.vdir = vdir ;
+        if (!taskData.vid || !taskData.vcmd  || !taskData.ws) {
             return new Response(JSON.stringify({
                 status: "error",
                 message: "Missing required task fields"
