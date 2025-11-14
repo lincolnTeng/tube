@@ -100,7 +100,7 @@ export async function onRequest(context) {
                     //  THE FIX IS HERE: Local try/catch and correct binding name
                     // ==========================================================
                     try {
-                        const tablesets = await dbService.getTableSets(env.DB); // <-- Corrected to env.DB
+                        const tablesets = await dbService.getTableSets(env.LLMSQL_DB); // <-- Corrected to env.DB
                         return jsonResponse(tablesets);
                     } catch (e) {
                         return jsonError(`Failed to get tablesets: ${e.message}`);
@@ -109,7 +109,7 @@ export async function onRequest(context) {
                 case 'tables':
                     if (!arg) return jsonError("Missing tableset name in URL", 400);
                     try {
-                        const tables = await dbService.getTablesInSet(env.DB, arg); // <-- Corrected to env.DB
+                        const tables = await dbService.getTablesInSet(env.LLMSQL_DB, arg); // <-- Corrected to env.DB
                         return jsonResponse(tables);
                     } catch (e) {
                         return jsonError(`Failed to get tables for '${arg}': ${e.message}`);
@@ -118,7 +118,7 @@ export async function onRequest(context) {
                 case 'browse':
                     if (!arg) return jsonError("Missing table name in URL", 400);
                     try {
-                        const tableData = await dbService.browseTable(env.DB, arg); // <-- Corrected to env.DB
+                        const tableData = await dbService.browseTable(env.LLMSQL_DB, arg); // <-- Corrected to env.DB
                         return jsonResponse(tableData);
                     } catch (e) {
                         return jsonError(`Failed to browse table '${arg}': ${e.message}`);
