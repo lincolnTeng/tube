@@ -27,13 +27,13 @@ export async function onRequest(context) {
         if (method === 'GET') {
             switch (command) {
                 case 'tablesets':
-                    return jsonResponse(await dbService.getTableSets(env.DB));
+                    return jsonResponse(await dbService.getTableSets(env.LLMSQL_DB));
                 case 'tables':
                     if (!arg) return jsonError("Missing tableset name in URL", 400);
-                    return jsonResponse(await dbService.getTablesInSet(env.DB, arg));
+                    return jsonResponse(await dbService.getTablesInSet(env.LLMSQL_DB, arg));
                 case 'browse':
                     if (!arg) return jsonError("Missing table name in URL", 400);
-                    return jsonResponse(await dbService.browseTable(env.DB, arg));
+                    return jsonResponse(await dbService.browseTable(env.LLMSQL_DB, arg));
                 case 'r2-files':
                     return jsonResponse(await r2Service.listFiles(env.LLMSQL_BUCKET));
                 default:
