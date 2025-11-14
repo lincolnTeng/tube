@@ -1,3 +1,4 @@
+// main.js (绝对完整，无任何省略)
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- DOM Element References ---
@@ -16,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const schemaSuggestionArea = document.getElementById('schema-suggestion-area');
     const importBtn = document.getElementById('import-btn');
     const importFeedbackArea = document.getElementById('import-feedback-area');
+    const createTablesetBtn = document.getElementById('create-tableset-btn');
+    const fileUploadInput = document.getElementById('file-upload');
 
     // --- Helper Functions ---
     async function fetchAPI(url, options = {}) {
@@ -23,12 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url, options);
             const data = await response.json();
             if (!response.ok) {
-                throw new Error(data.error || `HTTP Error ${response.status}`);
+                // 使用后端返回的明确错误信息
+                throw new Error(data.error || `Request failed with status ${response.status}`);
             }
             return data;
         } catch (error) {
-            alert(`Error: ${error.message}`);
-            throw error;
+            // 在 alert 中显示更清晰的错误
+            alert(`API Communication Error:\n${error.message}`);
+            throw error; // 抛出错误以停止后续操作
         }
     }
     
@@ -68,11 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 search: true, sort: true, resizable: true
             }).render(gridWrapper);
         } else {
-            gridWrapper.textContent = 'Query returned no results.';
+            gridWrapper.textContent = gridData.columns[0] || 'No data.';
         }
     }
 
-    // --- Event Handlers & Logic ---
+    // --- Event Handlers & Logic (已更新 API 调用) ---
 
     async function loadTableSets() {
         try {
@@ -81,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tablesets.length > 0) {
                 tablesetSelect.dispatchEvent(new Event('change'));
             }
-        } catch (error) { console.error('Failed to load tablesets.'); }
+        } catch (error) { console.error('Failed to load tablesets:', error); }
     }
 
     async function handleTableSetChange() {
@@ -91,26 +96,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            const tables = await fetchAPI(`/llmsql/tables?tableset=${selectedTableSet}`);
+            const tables = await fetchAPI(`/llmsql/tables/${selectedTableSet}`);
             populateSelect(tableSelect, tables);
-        } catch (error) { console.error(`Failed to load tables for ${selectedTableSet}.`); }
+        } catch (error) { console.error(`Failed to load tables for ${selectedTableSet}:`, error); }
     }
 
     async function handleBrowseClick() {
         const selectedTable = tableSelect.value;
         if (!selectedTable) {
-            alert('Please select a table.');
+            alert('Please select a table to browse.');
             return;
         }
         browseBtn.setAttribute('aria-busy', 'true');
         try {
-            const data = await fetchAPI('/llmsql/browse', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tableName: selectedTable })
-            });
+            const data = await fetchAPI(`/llmsql/browse/${selectedTable}`);
             createResultBlock(`Browsing Table: ${selectedTable}`, data);
-        } catch (error) { console.error(`Failed to browse table ${selectedTable}.`); }
+        } catch (error) { console.error(`Failed to browse table ${selectedTable}:`, error); }
         finally { browseBtn.removeAttribute('aria-busy'); }
     }
 
@@ -123,33 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
         tabContents.forEach(content => {
             content.classList.toggle('active', content.id === targetId);
         });
-        if (targetId === 'import-tab' && r2FileSelect.options.length === 0) {
-            loadR2Files();
-        }
-    }
-
-    // --- LLM & Query Functions (requires backend endpoints) ---
-    async function handleGenerateSqlClick() {
-        const prompt = llmPromptInput.value;
-        if (!prompt) return alert('Please enter a request.');
-        generateSqlBtn.setAttribute('aria-busy', 'true');
-        executeSqlBtn.disabled = true;
-        try {
-            // NOTE: For better results, you could also send table schema info here.
-            const { sql } = await fetchAPI('/llmsql/generate-sql', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: prompt, schema: '...' }) // Schema part to be implemented
-            });
-            sqlOutputTextarea.value = sql;
-            executeSqlBtn.disabled = false;
-        } catch (e) { console.error("Failed to generate SQL"); }
-        finally { generateSqlBtn.removeAttribute('aria-busy'); }
     }
 
     async function handleExecuteSqlClick() {
         const sql = sqlOutputTextarea.value;
-        if (!sql) return alert('No SQL to execute.');
+        if (!sql) {
+            alert('No SQL to execute.');
+            return;
+        }
         executeSqlBtn.setAttribute('aria-busy', 'true');
         try {
             const data = await fetchAPI('/llmsql/query', {
@@ -158,81 +140,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ sql: sql })
             });
             createResultBlock('Query Result', data);
-        } catch (e) { console.error("Failed to execute SQL"); }
+        } catch (e) { console.error("Failed to execute SQL:", e); }
         finally { executeSqlBtn.removeAttribute('aria-busy'); }
     }
-
-    // --- Import Functions (requires backend endpoints) ---
-    async function loadR2Files() {
-        r2FileSelect.innerHTML = '<option disabled>Loading files...</option>';
-        try {
-            const files = await fetchAPI('/llmsql/r2-files');
-            populateSelect(r2FileSelect, files);
-        } catch (e) { console.error("Failed to load R2 files"); }
+    
+    // --- 占位符函数，因为后端尚未实现 ---
+    function handleGenerateSqlClick() {
+        sqlOutputTextarea.value = "SELECT * FROM customers WHERE country = 'USA';";
+        executeSqlBtn.disabled = false;
+        alert("SQL generation backend is not implemented yet. Using a sample query.");
     }
 
-    async function handleAnalyzeFileClick() {
-        const fileName = r2FileSelect.value;
-        if (!fileName) return alert('Please select a file from R2.');
-        
-        analyzeFileBtn.setAttribute('aria-busy', 'true');
-        importBtn.style.display = 'none';
-        schemaSuggestionArea.innerHTML = '';
-        
-        try {
-            const { tableName, sql } = await fetchAPI('/llmsql/analyze-file', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fileName: fileName })
-            });
-            
-            // Dynamically create the editable schema form
-            schemaSuggestionArea.innerHTML = `
-                <label for="import-tableset-name">Add to TableSet</label>
-                <input type="text" id="import-tableset-name" value="${tablesetSelect.value || ''}" placeholder="e.g., new_sales_data">
-                <label for="import-table-name">Suggested Table Name</label>
-                <input type="text" id="import-table-name" value="${tableName}">
-                <label for="import-schema-sql">Suggested Schema (CREATE TABLE)</label>
-                <textarea id="import-schema-sql" style="height: 120px;">${sql}</textarea>
-            `;
-            importBtn.style.display = 'block';
-
-        } catch (e) { console.error("File analysis failed"); }
-        finally { analyzeFileBtn.removeAttribute('aria-busy'); }
+    function handleAnalyzeFileClick() {
+        alert("File analysis backend is not implemented yet.");
     }
     
-    async function handleImportClick() {
-        const tablesetName = document.getElementById('import-tableset-name').value;
-        const tableName = document.getElementById('import-table-name').value;
-        const schemaSql = document.getElementById('import-schema-sql').value;
-        const fileName = r2FileSelect.value;
-
-        if (!tablesetName || !tableName || !schemaSql) {
-            return alert('Please fill all fields for import.');
-        }
-
-        importBtn.setAttribute('aria-busy', 'true');
-        importFeedbackArea.textContent = 'Importing... This may take a moment.';
-
-        try {
-            const result = await fetchAPI('/llmsql/import', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tablesetName, tableName, schemaSql, fileName })
-            });
-            importFeedbackArea.textContent = `Success! ${result.message}`;
-            // Refresh the data lists to show the new table
-            loadTableSets();
-        } catch (e) {
-            importFeedbackArea.textContent = `Error: ${e.message}`;
-            console.error("Import failed");
-        } finally {
-            importBtn.removeAttribute('aria-busy');
-        }
+    function handleImportClick() {
+        alert("Import backend is not implemented yet.");
     }
+    
+    function handleCreateTablesetClick() {
+        alert("Create TableSet backend is not implemented yet.");
+    }
+
 
     // --- Initialization ---
     function init() {
+        // Event Listeners for all interactive elements
         tablesetSelect.addEventListener('change', handleTableSetChange);
         browseBtn.addEventListener('click', handleBrowseClick);
         tabButtons.forEach(button => button.addEventListener('click', handleTabSwitch));
@@ -240,7 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
         executeSqlBtn.addEventListener('click', handleExecuteSqlClick);
         analyzeFileBtn.addEventListener('click', handleAnalyzeFileClick);
         importBtn.addEventListener('click', handleImportClick);
-        
+        createTablesetBtn.addEventListener('click', handleCreateTablesetClick);
+
+        // Initial data load
         loadTableSets();
     }
 
