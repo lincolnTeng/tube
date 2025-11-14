@@ -123,6 +123,14 @@ export async function onRequest(context) {
                     } catch (e) {
                         return jsonError(`Failed to browse table '${arg}': ${e.message}`);
                     }
+
+                case 'r2-files':
+                    if (!env.LLMSQL_BUCKET) return jsonError("CRITICAL: R2 bucket is not bound.", 500);
+                    return jsonResponse(await r2Service.listFiles(env.LLMSQL_BUCKET));
+
+
+
+              
                 
                 default:
                     return jsonError(`Unknown GET command: '${command}'`, 404);
