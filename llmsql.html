@@ -12,88 +12,22 @@
     <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
 
     <style>
-        /* Custom styles for layout and components */
-        body {
-            padding: 2rem 0;
-        }
-        main.container {
-            max-width: 1100px;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-        .listbox {
-            height: 200px;
-            padding: 0.5rem;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            margin-top: 1rem;
-        }
-        
-        /* Area for dynamically added results */
-        #results-area {
-            margin-top: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-        .result-block {
-            border: 1px solid var(--pico-muted-border-color);
-            border-radius: var(--pico-border-radius);
-            position: relative;
-            overflow: hidden; /* Ensures child elements respect the border radius */
-        }
-        .result-block header {
-            padding: 0.75rem 1.25rem;
-            background-color: var(--pico-muted-background-color);
-            border-bottom: 1px solid var(--pico-muted-border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .result-block .content {
-            padding: 0.5rem; /* Reduced padding for denser tables */
-        }
-        .close-btn {
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-weight: bold;
-            font-size: 1.5rem;
-            line-height: 1;
-            padding: 0 0.5rem;
-            color: var(--pico-secondary);
-        }
-        .close-btn:hover {
-            color: var(--pico-primary);
-        }
-
-        /* Simple Tab styling for the operations area */
-        .operations-tabs nav a {
-            cursor: pointer;
-        }
-        .operations-tabs .tab-content article {
-            display: none;
-            padding: 1.5rem;
-            border: 1px solid var(--pico-muted-border-color);
-            border-top: none;
-            border-radius: 0 0 var(--pico-border-radius) var(--pico-border-radius);
-        }
-        .operations-tabs .tab-content article.active {
-            display: block;
-        }
-        .operations-tabs nav ul {
-            margin-bottom: 0;
-        }
-        .operations-tabs nav li a.active {
-            background-color: var(--pico-primary-background);
-            font-weight: bold;
-        }
+        body { padding: 2rem 0; }
+        main.container { max-width: 1100px; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .listbox { height: 200px; padding: 0.5rem; }
+        .action-buttons { display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem; }
+        #results-area { margin-top: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+        .result-block { border: 1px solid var(--pico-muted-border-color); border-radius: var(--pico-border-radius); position: relative; overflow: hidden; }
+        .result-block header { padding: 0.75rem 1.25rem; background-color: var(--pico-muted-background-color); border-bottom: 1px solid var(--pico-muted-border-color); display: flex; justify-content: space-between; align-items: center; }
+        .result-block .content { padding: 0.5rem; }
+        .close-btn { cursor: pointer; background: none; border: none; font-weight: bold; font-size: 1.5rem; line-height: 1; padding: 0 0.5rem; color: var(--pico-secondary); }
+        .close-btn:hover { color: var(--pico-primary); }
+        .operations-tabs nav a { cursor: pointer; }
+        .operations-tabs .tab-content article { display: none; padding: 1.5rem; border: 1px solid var(--pico-muted-border-color); border-top: none; border-radius: 0 0 var(--pico-border-radius) var(--pico-border-radius); }
+        .operations-tabs .tab-content article.active { display: block; }
+        .operations-tabs nav ul { margin-bottom: 0; }
+        .operations-tabs nav li a.active { background-color: var(--pico-primary-background); font-weight: bold; }
     </style>
 </head>
 
@@ -105,25 +39,18 @@
             <p style="text-align: center;">A simple interface to explore and query your Cloudflare D1 databases.</p>
         </header>
 
-        <!-- 1. Top Management Area: Data Discovery -->
         <article>
             <div class="grid-container">
-                <!-- Left: Tableset Selection -->
                 <div>
                     <label for="tableset-select"><strong>1. Select a TableSet</strong></label>
-                    <select id="tableset-select" name="tableset" class="listbox" multiple>
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
+                    <select id="tableset-select" name="tableset" class="listbox" multiple></select>
                      <div class="action-buttons">
                         <button id="create-tableset-btn">Create TableSet</button>
                     </div>
                 </div>
-                <!-- Right: Table Selection -->
                 <div>
                     <label for="table-select"><strong>2. Select a Table</strong></label>
-                    <select id="table-select" name="table" class="listbox" multiple>
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
+                    <select id="table-select" name="table" class="listbox" multiple></select>
                     <div class="action-buttons">
                         <button id="browse-btn" class="contrast">Browse Selected Table</button>
                     </div>
@@ -131,23 +58,8 @@
             </div>
         </article>
 
-        <!-- 2. Dynamically Added Results Area -->
-        <div id="results-area">
-            <!-- Example of a result block. This will be dynamically generated by JS. -->
-            <!-- 
-            <article class="result-block">
-                <header>
-                    <strong>Browsing Table: example_table</strong>
-                    <button class="close-btn" title="Close">&times;</button>
-                </header>
-                <div class="content grid-wrapper">
-                    // Grid.js table will be rendered here
-                </div>
-            </article> 
-            -->
-        </div>
+        <div id="results-area"></div>
 
-        <!-- 3. Bottom Operations Area with Tabs -->
         <section class="operations-tabs">
             <nav>
                 <ul>
@@ -156,56 +68,43 @@
                 </ul>
             </nav>
             <div class="tab-content">
-                <!-- Query Tab -->
                 <article id="query-tab" class="active">
                     <div class="grid-container">
                         <div>
-                            <label for="llm-prompt"><strong>1. Write your request in natural language</strong></label>
-                            <textarea id="llm-prompt" placeholder="e.g., 'Show me the top 5 customers by sales from the q1_report table'" style="height: 150px;"></textarea>
+                            <label for="llm-prompt"><strong>1. Write your request</strong></label>
+                            <textarea id="llm-prompt" placeholder="e.g., 'Show me the top 3 customers from the USA'" style="height: 150px;"></textarea>
                             <button id="generate-sql-btn" style="width: 100%; margin-top: 1rem;">Generate SQL</button>
                         </div>
                         <div>
                             <label for="sql-output"><strong>2. Review the generated SQL</strong></label>
-                            <textarea id="sql-output" readonly placeholder="SQL will appear here..." style="height: 150px; background-color: var(--pico-muted-background-color);"></textarea>
+                            <textarea id="sql-output" readonly placeholder="SQL will appear here..." style="height: 150px;"></textarea>
                             <button id="execute-sql-btn" class="contrast" disabled style="width: 100%; margin-top: 1rem;">Execute SQL</button>
                         </div>
                     </div>
                 </article>
 
-                <!-- Import Tab -->
                 <article id="import-tab">
                     <div class="grid-container">
-                        <!-- Left: File selection and upload -->
                         <div>
                             <label for="r2-file-select"><strong>1. Select file from R2 or Upload</strong></label>
-                            <select id="r2-file-select" class="listbox" multiple>
-                                <!-- R2 file list populated by JS -->
-                            </select>
+                            <select id="r2-file-select" class="listbox"></select>
                             <label for="file-upload" style="margin-top: 1rem;">Upload a new file (CSV, JSON)</label>
-                            <input type="file" id="file-upload">
+                            <input type="file" id="file-upload" disabled>
                         </div>
-                        <!-- Right: Analysis and Import actions -->
                         <div>
                             <label><strong>2. Analyze & Import</strong></label>
-                            <textarea id="file-preview" readonly placeholder="File preview will show here..." style="height: 100px;"></textarea>
-                            <button id="analyze-file-btn" style="width: 100%; margin-top: 1rem;">Analyze File for Schema</button>
-                            
-                            <!-- This area will be populated by JS after analysis -->
-                            <div id="schema-suggestion-area" style="margin-top: 1rem;"></div> 
-                            
-                            <button id="import-btn" class="contrast" disabled style="width: 100%; margin-top: 1rem;">Confirm & Import</button>
+                            <button id="analyze-file-btn" style="width: 100%;">Analyze File for Schema</button>
+                            <div id="schema-suggestion-area" style="margin-top: 1rem;"></div>
+                            <button id="import-btn" class="contrast" style="width: 100%; margin-top: 1rem; display: none;">Confirm & Import</button>
                             <small id="import-feedback-area"></small>
                         </div>
                     </div>
                 </article>
             </div>
         </section>
-
     </main>
     
-    <!-- Grid.js JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
-    <!-- Your custom JavaScript file for all the logic -->
     <script src="main.js"></script> 
 </body>
 </html>
