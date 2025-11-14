@@ -46,7 +46,7 @@ export async function onRequest(context) {
                 case 'query':
                     const body = await request.json();
                     if (!body.sql) return jsonError("Missing 'sql' in body", 400);
-                    return jsonResponse(await dbService.executeQuery(env.DB, body.sql));
+                    return jsonResponse(await dbService.executeQuery(env.LLMSQL_DB, body.sql));
                 case 'upload-file':
                     const formData = await request.formData();
                     const file = formData.get('file');
