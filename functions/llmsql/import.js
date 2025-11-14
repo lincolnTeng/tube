@@ -13,10 +13,10 @@ export async function onRequestPost(context) {
         }
 
         // 1. 创建表 (执行用户确认的 CREATE TABLE 语句)
-        await executeRawSql(env.DB, schemaSql);
+        await executeRawSql(env.LLMSQL_DB, schemaSql);
 
         // 2. 注册到 tableset 元数据
-        await registerTable(env.DB, tablesetName, tableName);
+        await registerTable(env.LLMSQL_DB, tablesetName, tableName);
 
         // 3. 从 R2 读取文件内容
         const csvContent = await getFileContent(env.LLMSQL_BUCKET, fileName);
@@ -42,7 +42,7 @@ export async function onRequestPost(context) {
         const BATCH_SIZE = 50;
         for (let i = 0; i < dataRows.length; i += BATCH_SIZE) {
             const batch = dataRows.slice(i, i + BATCH_SIZE);
-            await insertBatch(env.DB, tableName, headers, batch);
+            await insertBatch(env.LLMSQL_DB, tableName, headers, batch);
         }
 
         return new Response(JSON.stringify({ 
