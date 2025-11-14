@@ -37,15 +37,15 @@ export async function onRequest(context) {
         if (method === 'GET') {
             switch (command) {
                 case 'tablesets':
-                    return jsonResponse(await dbService.getTableSets(env.DB));
+                    return jsonResponse(await dbService.getTableSets(env.LLMSQL_DB));
                 
                 case 'tables':
                     if (!arg) return jsonError("Missing tableset name in URL (e.g., /llmsql/tables/my_tableset)", 400);
-                    return jsonResponse(await dbService.getTablesInSet(env.DB, arg));
+                    return jsonResponse(await dbService.getTablesInSet(env.LLMSQL_DB, arg));
 
                 case 'browse':
                     if (!arg) return jsonError("Missing table name in URL (e.g., /llmsql/browse/my_table)", 400);
-                    return jsonResponse(await dbService.browseTable(env.DB, arg));
+                    return jsonResponse(await dbService.browseTable(env.LLMSQL_DB, arg));
                 
                 default:
                     return jsonError(`Unknown GET command: '${command}'`, 404);
@@ -57,7 +57,7 @@ export async function onRequest(context) {
             switch (command) {
                 case 'query':
                     if (!body.sql) return jsonError("Missing 'sql' property in request body", 400);
-                    return jsonResponse(await dbService.executeQuery(env.DB, body.sql));
+                    return jsonResponse(await dbService.executeQuery(env.LLMSQL_DB, body.sql));
 
                 default:
                     return jsonError(`Unknown POST command: '${command}'`, 404);
