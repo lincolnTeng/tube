@@ -4,62 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LLM SQL Tool</title>
-    
-    <!-- Pico.css for styling -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
-    
-    <!-- Grid.js CSS Theme -->
     <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
-
     <style>
-        body { padding: 2rem 0; }
-        main.container { max-width: 1100px; }
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .listbox { height: 200px; padding: 0.5rem; }
-        .action-buttons { display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem; }
-        #results-area { margin-top: 2rem; display: flex; flex-direction: column; gap: 2rem; }
-        .result-block { border: 1px solid var(--pico-muted-border-color); border-radius: var(--pico-border-radius); position: relative; overflow: hidden; }
-        .result-block header { padding: 0.75rem 1.25rem; background-color: var(--pico-muted-background-color); border-bottom: 1px solid var(--pico-muted-border-color); display: flex; justify-content: space-between; align-items: center; }
-        .result-block .content { padding: 0.5rem; }
-        .close-btn { cursor: pointer; background: none; border: none; font-weight: bold; font-size: 1.5rem; line-height: 1; padding: 0 0.5rem; color: var(--pico-secondary); }
-        .close-btn:hover { color: var(--pico-primary); }
-        .operations-tabs nav a { cursor: pointer; }
-        .operations-tabs .tab-content article { display: none; padding: 1.5rem; border: 1px solid var(--pico-muted-border-color); border-top: none; border-radius: 0 0 var(--pico-border-radius) var(--pico-border-radius); }
-        .operations-tabs .tab-content article.active { display: block; }
-        .operations-tabs nav ul { margin-bottom: 0; }
-        .operations-tabs nav li a.active { background-color: var(--pico-primary-background); font-weight: bold; }
+        body { padding-top: 2rem; }
+        main.container { max-width: 95%; }
+        .main-layout { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; }
+        .nav-listbox { height: 400px; }
+        .child-option { padding-left: 2rem !important; }
+        #table-display-area .gridjs-wrapper { border: none; box-shadow: none; }
+        .import-target-bar {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: var(--pico-border-radius);
+            background-color: var(--pico-muted-background-color);
+            border: 1px solid var(--pico-muted-border-color);
+        }
     </style>
 </head>
-
 <body>
     <main class="container">
-        
         <header>
             <h1 style="text-align: center;">LLM SQL Tool</h1>
-            <p style="text-align: center;">A simple interface to explore and query your Cloudflare D1 databases.</p>
         </header>
 
-        <article>
-            <div class="grid-container">
-                <div>
-                    <label for="tableset-select"><strong>1. Select a TableSet</strong></label>
-                    <select id="tableset-select" name="tableset" class="listbox" multiple></select>
-                     <div class="action-buttons">
-                        <button id="create-tableset-btn">Create TableSet</button>
-                    </div>
-                </div>
-                <div>
-                    <label for="table-select"><strong>2. Select a Table</strong></label>
-                    <select id="table-select" name="table" class="listbox" multiple></select>
-                    <div class="action-buttons">
-                        <button id="browse-btn" class="contrast">Browse Selected Table</button>
-                    </div>
-                </div>
+        <!-- Section 1: Data Exploration (New Layout) -->
+        <article class="main-layout">
+            <!-- Left: Unified Tree Navigation -->
+            <div>
+                <label for="nav-select"><strong>1. Select Data Source</strong></label>
+                <select id="nav-select" class="nav-listbox" size="2">
+                    <!-- Dynamic content will be loaded here -->
+                </select>
+                <button id="create-tableset-btn" style="width: 100%; margin-top: 1rem;">Create TableSet</button>
+            </div>
+            <!-- Right: Table Content Display -->
+            <div id="table-display-area">
+                <label><strong>2. View Table Content</strong></label>
+                <!-- Grid.js will render here -->
             </div>
         </article>
 
-        <div id="results-area"></div>
-
+        <!-- Section 2: Operations (Query & Import) -->
         <section class="operations-tabs">
             <nav>
                 <ul>
@@ -69,14 +55,14 @@
             </nav>
             <div class="tab-content">
                 <article id="query-tab" class="active">
-                    <div class="grid-container">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div>
                             <label for="llm-prompt"><strong>1. Write your request</strong></label>
                             <textarea id="llm-prompt" placeholder="e.g., 'Show me the top 3 customers from the USA'" style="height: 150px;"></textarea>
                             <button id="generate-sql-btn" style="width: 100%; margin-top: 1rem;">Generate SQL</button>
                         </div>
                         <div>
-                            <label for="sql-output"><strong>2. Review the generated SQL</strong></label>
+                            <label for="sql-output"><strong>2. Review generated SQL</strong></label>
                             <textarea id="sql-output" readonly placeholder="SQL will appear here..." style="height: 150px;"></textarea>
                             <button id="execute-sql-btn" class="contrast" disabled style="width: 100%; margin-top: 1rem;">Execute SQL</button>
                         </div>
@@ -84,26 +70,28 @@
                 </article>
 
                 <article id="import-tab">
-                    <div class="grid-container">
+                    <div class="import-target-bar">
+                        Importing to TableSet: <strong id="import-target-display">None Selected</strong>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div>
                             <label for="r2-file-select"><strong>1. Select file from R2 or Upload</strong></label>
-                            <select id="r2-file-select" class="listbox"></select>
+                            <select id="r2-file-select" size="8"></select>
                             <label for="file-upload" style="margin-top: 1rem;">Upload a new file (CSV, JSON)</label>
-                            <input type="file" id="file-upload" disabled>
+                            <input type="file" id="file-upload">
                         </div>
                         <div>
-                            <label><strong>2. Analyze & Import</strong></label>
-                            <button id="analyze-file-btn" style="width: 100%;">Analyze File for Schema</button>
-                            <div id="schema-suggestion-area" style="margin-top: 1rem;"></div>
+                            <label for="file-preview"><strong>2. Preview File & Analyze</strong></label>
+                            <textarea id="file-preview" readonly placeholder="File preview will show here..." style="height: 200px;"></textarea>
+                            <button id="analyze-file-btn" style="width: 100%; margin-top: 1rem;">Analyze File</button>
+                            <div id="schema-suggestion-area" style="margin-top: 1rem;"></div> 
                             <button id="import-btn" class="contrast" style="width: 100%; margin-top: 1rem; display: none;">Confirm & Import</button>
-                            <small id="import-feedback-area"></small>
                         </div>
                     </div>
                 </article>
             </div>
         </section>
     </main>
-    
     <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
     <script src="main.js"></script> 
 </body>
