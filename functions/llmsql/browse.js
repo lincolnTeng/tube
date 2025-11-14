@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
             return new Response("Missing tableName", { status: 400 });
         }
 
-        const result = await browseTable(env.DB, tableName);
+        const result = await browseTable(env.LLMSQL_DB, tableName);
         
         return new Response(JSON.stringify(result), {
             headers: { 'Content-Type': 'application/json' }
