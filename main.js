@@ -1,5 +1,6 @@
-// main.js (绝对完整，无任何省略)
+// main.js (最终版：已删除所有垃圾逻辑，回归简单和正确)
 document.addEventListener('DOMContentLoaded', () => {
+    const API_BASE_PATH = '/llmsql';
 
     // --- DOM Element References ---
     const tablesetSelect = document.getElementById('tableset-select');
@@ -12,28 +13,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateSqlBtn = document.getElementById('generate-sql-btn');
     const sqlOutputTextarea = document.getElementById('sql-output');
     const executeSqlBtn = document.getElementById('execute-sql-btn');
-    const r2FileSelect = document.getElementById('r2-file-select');
-    const analyzeFileBtn = document.getElementById('analyze-file-btn');
-    const schemaSuggestionArea = document.getElementById('schema-suggestion-area');
-    const importBtn = document.getElementById('import-btn');
-    const importFeedbackArea = document.getElementById('import-feedback-area');
     const createTablesetBtn = document.getElementById('create-tableset-btn');
-    const fileUploadInput = document.getElementById('file-upload');
-
+    
     // --- Helper Functions ---
     async function fetchAPI(url, options = {}) {
         try {
             const response = await fetch(url, options);
             const data = await response.json();
             if (!response.ok) {
-                // 使用后端返回的明确错误信息
                 throw new Error(data.error || `Request failed with status ${response.status}`);
             }
             return data;
         } catch (error) {
-            // 在 alert 中显示更清晰的错误
             alert(`API Communication Error:\n${error.message}`);
-            throw error; // 抛出错误以停止后续操作
+            throw error;
         }
     }
     
@@ -55,21 +48,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const resultBlock = document.createElement('article');
         resultBlock.className = 'result-block';
         resultBlock.innerHTML = `
-            <header>
-                <strong>${title}</strong>
-                <button class="close-btn" title="Close">&times;</button>
-            </header>
+            <header><strong>${title}</strong><button class="close-btn" title="Close">&times;</button></header>
             <div class="content"><div class="grid-wrapper"></div></div>
         `;
         resultsArea.prepend(resultBlock);
         resultBlock.querySelector('.close-btn').addEventListener('click', () => resultBlock.remove());
-
         const gridWrapper = resultBlock.querySelector('.grid-wrapper');
         if (gridData && gridData.data && gridData.data.length > 0) {
             new gridjs.Grid({
-                columns: gridData.columns,
-                data: gridData.data,
-                pagination: { limit: 10 },
+                columns: gridData.columns, data: gridData.data, pagination: { limit: 10 },
                 search: true, sort: true, resizable: true
             }).render(gridWrapper);
         } else {
@@ -77,39 +64,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Event Handlers & Logic (已更新 API 调用) ---
+    // --- Event Handlers & Logic ---
 
+    /**
+     * 页面加载时只做一件事：加载左侧的 TableSet 列表。
+     * 不做任何多余的操作。
+     */
     async function loadTableSets() {
         try {
-            const tablesets = await fetchAPI('/llmsql/tablesets');
+            const tablesets = await fetchAPI(`${API_BASE_PATH}/tablesets`);
             populateSelect(tablesetSelect, tablesets);
-            if (tablesets.length > 0) {
-                tablesetSelect.dispatchEvent(new Event('change'));
+
+            // 如果左侧列表为空，确保右侧也显示为空。
+            if (tablesets.length === 0) {
+                 populateSelect(tableSelect, []);
             }
+            // 我之前所有画蛇添足的垃圾代码都已删除。
+            
         } catch (error) { console.error('Failed to load tablesets:', error); }
     }
 
+    /**
+     * 当用户与左侧列表交互时，这个函数才会被触发。
+     */
     async function handleTableSetChange() {
         const selectedTableSet = tablesetSelect.value;
+        
+        // 如果用户取消了选择，导致值为空，则清空右侧列表。
         if (!selectedTableSet) {
             populateSelect(tableSelect, []);
-            return;
+            return; 
         }
+
+        // 只有当用户确实选择了一个有效项时，才去请求 API。
         try {
-            const tables = await fetchAPI(`/llmsql/tables/${selectedTableSet}`);
+            const tables = await fetchAPI(`${API_BASE_PATH}/tables/${selectedTableSet}`);
             populateSelect(tableSelect, tables);
         } catch (error) { console.error(`Failed to load tables for ${selectedTableSet}:`, error); }
     }
 
     async function handleBrowseClick() {
         const selectedTable = tableSelect.value;
-        if (!selectedTable) {
-            alert('Please select a table to browse.');
-            return;
-        }
+        if (!selectedTable) { alert('Please select a table to browse.'); return; }
         browseBtn.setAttribute('aria-busy', 'true');
         try {
-            const data = await fetchAPI(`/llmsql/browse/${selectedTable}`);
+            const data = await fetchAPI(`${API_BASE_PATH}/browse/${selectedTable}`);
             createResultBlock(`Browsing Table: ${selectedTable}`, data);
         } catch (error) { console.error(`Failed to browse table ${selectedTable}:`, error); }
         finally { browseBtn.removeAttribute('aria-busy'); }
@@ -121,22 +120,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetId = clickedTab.dataset.target;
         tabButtons.forEach(btn => btn.classList.remove('active'));
         clickedTab.classList.add('active');
-        tabContents.forEach(content => {
-            content.classList.toggle('active', content.id === targetId);
-        });
+        tabContents.forEach(content => { content.classList.toggle('active', content.id === targetId); });
     }
 
     async function handleExecuteSqlClick() {
         const sql = sqlOutputTextarea.value;
-        if (!sql) {
-            alert('No SQL to execute.');
-            return;
-        }
+        if (!sql) { alert('No SQL to execute.'); return; }
         executeSqlBtn.setAttribute('aria-busy', 'true');
         try {
-            const data = await fetchAPI('/llmsql/query', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            const data = await fetchAPI(`${API_BASE_PATH}/query`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ sql: sql })
             });
             createResultBlock('Query Result', data);
@@ -144,39 +137,25 @@ document.addEventListener('DOMContentLoaded', () => {
         finally { executeSqlBtn.removeAttribute('aria-busy'); }
     }
     
-    // --- 占位符函数，因为后端尚未实现 ---
     function handleGenerateSqlClick() {
         sqlOutputTextarea.value = "SELECT * FROM customers WHERE country = 'USA';";
         executeSqlBtn.disabled = false;
         alert("SQL generation backend is not implemented yet. Using a sample query.");
-    }
-
-    function handleAnalyzeFileClick() {
-        alert("File analysis backend is not implemented yet.");
-    }
-    
-    function handleImportClick() {
-        alert("Import backend is not implemented yet.");
     }
     
     function handleCreateTablesetClick() {
         alert("Create TableSet backend is not implemented yet.");
     }
 
-
     // --- Initialization ---
     function init() {
-        // Event Listeners for all interactive elements
         tablesetSelect.addEventListener('change', handleTableSetChange);
         browseBtn.addEventListener('click', handleBrowseClick);
         tabButtons.forEach(button => button.addEventListener('click', handleTabSwitch));
         generateSqlBtn.addEventListener('click', handleGenerateSqlClick);
         executeSqlBtn.addEventListener('click', handleExecuteSqlClick);
-        analyzeFileBtn.addEventListener('click', handleAnalyzeFileClick);
-        importBtn.addEventListener('click', handleImportClick);
         createTablesetBtn.addEventListener('click', handleCreateTablesetClick);
-
-        // Initial data load
+        
         loadTableSets();
     }
 
