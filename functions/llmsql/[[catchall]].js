@@ -93,23 +93,41 @@ export async function onRequest(context) {
     }
 
     try {
-        if (method === 'GET') {
+      if (method === 'GET') {
             switch (command) {
                 case 'tablesets':
-                    return jsonResponse(await dbService.getTableSets(env.LLMSQL_DB));
+                    // ==========================================================
+                    //  THE FIX IS HERE: Local try/catch and correct binding name
+                    // ==========================================================
+                    try {
+                        const tablesets = await dbService.getTableSets(env.DB); // <-- Corrected to env.DB
+                        return jsonResponse(tablesets);
+                    } catch (e) {
+                        return jsonError(`Failed to get tablesets: ${e.message}`);
+                    }
+
                 case 'tables':
                     if (!arg) return jsonError("Missing tableset name in URL", 400);
-                    return jsonResponse(await dbService.getTablesInSet(env.LLMSQL_DB, arg));
+                    try {
+                        const tables = await dbService.getTablesInSet(env.DB, arg); // <-- Corrected to env.DB
+                        return jsonResponse(tables);
+                    } catch (e) {
+                        return jsonError(`Failed to get tables for '${arg}': ${e.message}`);
+                    }
+
                 case 'browse':
                     if (!arg) return jsonError("Missing table name in URL", 400);
-                    return jsonResponse(await dbService.browseTable(env.LLMSQL_DB, arg));
-                case 'r2-files':
-                    return jsonResponse(await r2Service.listFiles(env.LLMSQL_BUCKET));
+                    try {
+                        const tableData = await dbService.browseTable(env.DB, arg); // <-- Corrected to env.DB
+                        return jsonResponse(tableData);
+                    } catch (e) {
+                        return jsonError(`Failed to browse table '${arg}': ${e.message}`);
+                    }
+                
                 default:
                     return jsonError(`Unknown GET command: '${command}'`, 404);
             }
         }
-
         if (method === 'POST') {
             switch (command) {
                 case 'query':
