@@ -21,9 +21,7 @@
 </head>
 <body>
     <main class="container">
-        <header>
-            <h1 style="text-align: center;">LLM SQL Tool</h1>
-        </header>
+        <header><h1 style="text-align: center;">LLM SQL Tool</h1></header>
 
         <article class="main-layout">
             <div>
@@ -31,16 +29,10 @@
                 <select id="nav-select" class="nav-listbox" size="2"></select>
                 <button id="create-tableset-btn" style="width: 100%; margin-top: 1rem;">Create TableSet</button>
             </div>
-            
-            <!-- ========================================================== -->
-            <!-- THE FIX IS HERE: Separating the label from the grid container -->
-            <!-- ========================================================== -->
             <div>
                 <label id="table-display-label"><strong>2. View Table Content</strong></label>
                 <div id="grid-wrapper"></div>
             </div>
-            <!-- ========================================================== -->
-
         </article>
 
         <section class="operations-tabs">
@@ -67,22 +59,22 @@
                 </article>
 
                 <article id="import-tab">
-                    <div class="import-target-bar">
-                        Importing to TableSet: <strong id="import-target-display">None Selected</strong>
-                    </div>
+                    <div class="import-target-bar">Importing to TableSet: <strong id="import-target-display">None Selected</strong></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div>
                             <label for="r2-file-select"><strong>1. Select file from R2 or Upload</strong></label>
                             <select id="r2-file-select" size="8"></select>
                             <label for="file-upload" style="margin-top: 1rem;">Upload a new file (CSV, JSON)</label>
                             <input type="file" id="file-upload">
+                            <!-- ========================================================== -->
+                            <!-- THE FIX IS HERE: The new upload button -->
+                            <!-- ========================================================== -->
+                            <button id="upload-btn" style="width:100%; margin-top: 0.5rem; display: none;">Upload Selected File to R2</button>
                         </div>
                         <div>
                             <label for="file-preview"><strong>2. Preview File & Analyze</strong></label>
                             <textarea id="file-preview" readonly placeholder="File preview will show here..." style="height: 200px;"></textarea>
                             <button id="analyze-file-btn" style="width: 100%; margin-top: 1rem;">Analyze File</button>
-                            <div id="schema-suggestion-area" style="margin-top: 1rem;"></div> 
-                            <button id="import-btn" class="contrast" style="width: 100%; margin-top: 1rem; display: none;">Confirm & Import</button>
                         </div>
                     </div>
                 </article>
