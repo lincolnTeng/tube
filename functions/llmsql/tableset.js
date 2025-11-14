@@ -5,7 +5,7 @@ export async function onRequestGet(context) {
     const { env } = context;
     
     try {
-        const data = await getTableSets(env.DB);
+        const data = await getTableSets(env.LLMSQL_DB);
         return new Response(JSON.stringify(data), {
             headers: { 'Content-Type': 'application/json' }
         });
