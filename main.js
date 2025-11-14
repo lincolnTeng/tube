@@ -1,6 +1,6 @@
 // main.js (最终修正：恢复所有功能和事件监听)
 document.addEventListener('DOMContentLoaded', () => {
-    const API_BASE_PATH = '/api/llmsql';
+    const API_BASE_PATH = '/llmsql';
 
     // --- DOM References ---
     const navSelect = document.getElementById('nav-select');
