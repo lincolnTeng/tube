@@ -49,6 +49,13 @@ const r2Service = {
         if (!bucket) throw new Error("R2 bucket binding (LLMSQL_BUCKET) is missing.");
         await bucket.put(fileName, fileData);
         return { success: true, fileName: fileName };
+    },
+        async getFilePreview(bucket, fileName, lines = 10) {
+        if (!bucket) throw new Error("R2 bucket binding (LLMSQL_BUCKET) is missing.");
+        const object = await bucket.get(fileName);
+        if (!object) throw new Error(`File '${fileName}' not found in R2.`);
+        const content = await object.text();
+        return content.split('\n').slice(0, lines).join('\n');
     }
 };
 
@@ -91,6 +98,11 @@ export async function onRequest(context) {
                     if (!arg) return jsonError("Missing table name in URL", 400);
                     return jsonResponse(await dbService.browseTable(DB, arg));
                 case 'r2-files': return jsonResponse(await r2Service.listFiles(BUCKET));
+
+                case 'file-preview':
+                    if (!arg) return jsonError("Missing file name in URL", 400);
+                    return jsonResponse({ preview: await r2Service.getFilePreview(BUCKET, arg) });
+                    
                 default: return jsonError(`Unknown GET command: '${command}'`, 404);
             }
         }
@@ -107,6 +119,13 @@ export async function onRequest(context) {
                     if (!file) return jsonError("No file found in form data", 400);
                     const fileData = await file.arrayBuffer();
                     return jsonResponse(await r2Service.uploadFile(BUCKET, file.name, fileData));
+
+                case 'analyze-file':
+                    if (!body.fileName) return jsonError("Missing 'fileName' in body", 400);
+                    // 获取更长的样本用于分析
+                    const fileSample = await r2Service.getFilePreview(BUCKET, body.fileName, 20);
+                    return jsonResponse(await llmService.analyzeSchema(GEMINI_API_KEY, body.fileName, fileSample));
+                    
                 default: return jsonError(`Unknown POST command: '${command}'`, 404);
             }
         }
