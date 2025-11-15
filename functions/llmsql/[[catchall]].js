@@ -1,74 +1,60 @@
+// functions/llmsql/[[catchall]].js (最终合并版)
 
- const dbService = {
+// =================================================================
+// 核心服务逻辑 (Service Logic)
+// =================================================================
+
+const dbService = {
     async getTableSets(db) {
-        if (!db) throw new Error("D1 database binding is missing or not configured.");
+        if (!db) throw new Error("D1 database binding (LLMSQL_DB) is missing or not configured.");
         const ps = db.prepare("SELECT DISTINCT tableset_name FROM _tableset_meta ORDER BY tableset_name");
         const { results } = await ps.all();
         return results.map(row => row.tableset_name);
     },
     async getTablesInSet(db, tablesetName) {
-        if (!db) throw new Error("D1 database binding is missing.");
+        if (!db) throw new Error("D1 database binding (LLMSQL_DB) is missing.");
         const ps = db.prepare("SELECT table_name FROM _tableset_meta WHERE tableset_name = ? ORDER BY table_name");
         const { results } = await ps.bind(tablesetName).all();
         return results.map(row => row.table_name);
     },
     async browseTable(db, tableName) {
-        if (!db) throw new Error("D1 database binding is missing.");
-        if (!/^[a-zA-Z0-9_]+$/.test(tableName)) {
-            throw new Error("Invalid table name format. Only alphanumeric characters and underscores are allowed.");
-        }
+        if (!db) throw new Error("D1 database binding (LLMSQL_DB) is missing.");
+        if (!/^[a-zA-Z0-9_]+$/.test(tableName)) throw new Error("Invalid table name format.");
         const ps = db.prepare(`SELECT * FROM ${tableName} LIMIT 200`);
         const { results } = await ps.all();
-        if (!results || results.length === 0) {
-            return { columns: [`No data in table '${tableName}'`], data: [] };
-        }
+        if (!results || results.length === 0) return { columns: [`No data in table '${tableName}'`], data: [] };
         const columns = Object.keys(results[0]);
         const data = results.map(row => Object.values(row));
         return { columns, data };
     },
     async executeQuery(db, sql) {
-        if (!db) throw new Error("D1 database binding is missing.");
-        if (!sql.trim().toLowerCase().startsWith('select')) {
-            throw new Error("Security violation: Only SELECT queries are allowed.");
-        }
+        if (!db) throw new Error("D1 database binding (LLMSQL_DB) is missing.");
+        if (!sql.trim().toLowerCase().startsWith('select')) throw new Error("Security violation: Only SELECT queries are allowed.");
         const ps = db.prepare(sql);
         const { results } = await ps.all();
-        if (!results || results.length === 0) {
-            return { columns: ["Query returned no results"], data: [] };
-        }
+        if (!results || results.length === 0) return { columns: ["Query returned no results"], data: [] };
         const columns = Object.keys(results[0]);
         const data = results.map(row => Object.values(row));
         return { columns, data };
     }
 };
 
-// =================================================================
-// R2 (文件存储) 服务
-// =================================================================
- const r2Service = {
-    /**
-     * 列出 Bucket 中的文件
-     */
+const r2Service = {
     async listFiles(bucket) {
-        if (!bucket) throw new Error("R2 bucket binding is missing.");
+        if (!bucket) throw new Error("R2 bucket binding (LLMSQL_BUCKET) is missing.");
         const listed = await bucket.list();
         return listed.objects.map(obj => obj.key);
     },
-    
-    /**
-     * 上传文件到 R2
-     */
     async uploadFile(bucket, fileName, fileData) {
-        if (!bucket) throw new Error("R2 bucket binding is missing.");
+        if (!bucket) throw new Error("R2 bucket binding (LLMSQL_BUCKET) is missing.");
         await bucket.put(fileName, fileData);
         return { success: true, fileName: fileName };
     }
-}
+};
 
-
-
-
-
+// =================================================================
+// API 路由和请求处理 (Request Handler)
+// =================================================================
 
 function jsonResponse(data, status = 200) {
     return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
@@ -86,70 +72,42 @@ export async function onRequest(context) {
     const arg = pathParts[1];
     const method = request.method;
 
-    console.log(`[Request] ${method} /api/llmsql/${pathParts.join('/')}`);
+    console.log(`[Request] ${method} /llmsql/${pathParts.join('/')}`);
 
-    if (!command && method === 'GET') {
-        return jsonResponse({ message: "Welcome API" });
-    }
+    // 使用您指定的正确绑定名：env.LLMSQL_DB 和 env.LLMSQL_BUCKET
+    const DB = env.LLMSQL_DB;
+    const BUCKET = env.LLMSQL_BUCKET;
+
+    if (!command && method === 'GET') return jsonResponse({ message: "Welcome API" });
 
     try {
-      if (method === 'GET') {
+        if (method === 'GET') {
             switch (command) {
-                case 'tablesets':
-                    // ==========================================================
-                    //  THE FIX IS HERE: Local try/catch and correct binding name
-                    // ==========================================================
-                    try {
-                        const tablesets = await dbService.getTableSets(env.LLMSQL_DB); // <-- Corrected to env.DB
-                        return jsonResponse(tablesets);
-                    } catch (e) {
-                        return jsonError(`Failed to get tablesets: ${e.message}`);
-                    }
-
+                case 'tablesets': return jsonResponse(await dbService.getTableSets(DB));
                 case 'tables':
                     if (!arg) return jsonError("Missing tableset name in URL", 400);
-                    try {
-                        const tables = await dbService.getTablesInSet(env.LLMSQL_DB, arg); // <-- Corrected to env.DB
-                        return jsonResponse(tables);
-                    } catch (e) {
-                        return jsonError(`Failed to get tables for '${arg}': ${e.message}`);
-                    }
-
+                    return jsonResponse(await dbService.getTablesInSet(DB, arg));
                 case 'browse':
                     if (!arg) return jsonError("Missing table name in URL", 400);
-                    try {
-                        const tableData = await dbService.browseTable(env.LLMSQL_DB, arg); // <-- Corrected to env.DB
-                        return jsonResponse(tableData);
-                    } catch (e) {
-                        return jsonError(`Failed to browse table '${arg}': ${e.message}`);
-                    }
-
-                case 'r2-files':
-                    if (!env.LLMSQL_BUCKET) return jsonError("CRITICAL: R2 bucket is not bound.", 500);
-                    return jsonResponse(await r2Service.listFiles(env.LLMSQL_BUCKET));
-
-
-
-              
-                
-                default:
-                    return jsonError(`Unknown GET command: '${command}'`, 404);
+                    return jsonResponse(await dbService.browseTable(DB, arg));
+                case 'r2-files': return jsonResponse(await r2Service.listFiles(BUCKET));
+                default: return jsonError(`Unknown GET command: '${command}'`, 404);
             }
         }
+
         if (method === 'POST') {
             switch (command) {
                 case 'query':
                     const body = await request.json();
                     if (!body.sql) return jsonError("Missing 'sql' in body", 400);
-                    return jsonResponse(await dbService.executeQuery(env.LLMSQL_DB, body.sql));
+                    return jsonResponse(await dbService.executeQuery(DB, body.sql));
                 case 'upload-file':
                     const formData = await request.formData();
                     const file = formData.get('file');
                     if (!file) return jsonError("No file found in form data", 400);
                     const fileData = await file.arrayBuffer();
-                    return jsonResponse(await r2Service.uploadFile(env.LLMSQL_BUCKET, file.name, fileData));
-                default:
-                    return jsonError(`Unknown POST command: '${command}'`, 404);
+                    return jsonResponse(await r2Service.uploadFile(BUCKET, file.name, fileData));
+                default: return jsonError(`Unknown POST command: '${command}'`, 404);
             }
         }
         return jsonError(`Method ${method} not supported`, 405);
