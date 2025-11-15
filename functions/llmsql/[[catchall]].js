@@ -59,6 +59,91 @@ const r2Service = {
     }
 };
 
+const llmService = {
+    /**
+     * 调用 Gemini API 分析文件样本并返回建议的 SQL Schema
+     * @param {string} apiKey - Google Gemini API Key
+     * @param {string} fileName - The name of the file being analyzed
+     * @param {string} fileSample - A sample of the file's content
+     * @returns {Promise<{tableName: string, sql: string}>}
+     */
+    async analyzeSchema(apiKey, fileName, fileSample) {
+        if (!apiKey) {
+            throw new Error("GEMINI_API_KEY is not configured. Please set it as a secret.");
+        }
+
+        // 1. 构建 Prompt
+        const prompt = `
+You are an expert data engineer. Your task is to analyze a file sample and infer a suitable SQLite schema.
+
+RULES:
+1.  Analyze the provided file sample.
+2.  Suggest a descriptive and valid SQL table name based on the file name. The name must be lowercase and use underscores (e.g., 'user_profiles').
+3.  Infer the column names and their appropriate SQL data types. Use only TEXT, INTEGER, REAL, or BLOB.
+4.  If an 'id' or similarly unique column exists, set it as the PRIMARY KEY.
+5.  Your final output must be ONLY a single, raw JSON object.
+6.  The JSON object must have this exact format: { "tableName": "...", "sql": "CREATE TABLE ..." }
+7.  Do NOT include any extra text, explanations, or markdown formatting like \`\`\`json.
+
+File Name: ${fileName}
+
+File Sample:
+---
+${fileSample}
+---
+
+JSON Output:
+`;
+
+        // 2. 准备 API 请求
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+        const requestBody = {
+            contents: [{
+                parts: [{
+                    text: prompt
+                }]
+            }],
+            // Optional: Add safety settings if needed
+            // safetySettings: [ ... ], 
+            // generationConfig: { ... }
+        };
+
+        // 3. 发起 fetch 请求
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        // 4. 处理响应
+        if (!response.ok) {
+            const errorBody = await response.text();
+            throw new Error(`Gemini API request failed with status ${response.status}: ${errorBody}`);
+        }
+
+        const data = await response.json();
+
+        // 5. 解析并返回结果
+        try {
+            if (!data.candidates || data.candidates.length === 0) {
+                throw new Error("Gemini API returned no candidates in the response.");
+            }
+            // 提取并清理 LLM 返回的文本
+            let text = data.candidates[0].content.parts[0].text.trim();
+            // 鲁棒性处理：移除 LLM 可能错误添加的 Markdown 代码块标记
+            text = text.replace(/^```(json)?\s*|```$/g, '').trim();
+            
+            return JSON.parse(text);
+        } catch (error) {
+            console.error("Failed to parse LLM response. Raw text:", data.candidates[0].content.parts[0].text);
+            throw new Error(`Could not parse a valid JSON response from the LLM. Error: ${error.message}`);
+        }
+    }
+};
+
+
 // =================================================================
 // API 路由和请求处理 (Request Handler)
 // =================================================================
