@@ -101,6 +101,12 @@
         const fileUploadInput = document.getElementById('file-upload');
         const uploadBtn = document.getElementById('upload-btn');
         // (Other elements referenced as needed)
+const filePreview = document.getElementById('file-preview');
+const analyzeFileBtn = document.getElementById('analyze-file-btn');
+const schemaSuggestionArea = document.getElementById('schema-suggestion-area');
+const importBtn = document.getElementById('import-btn');
+
+        
         
         let gridInstance = null;
 
@@ -227,6 +233,60 @@
                 fileUploadInput.value = '';
             }
         }
+
+
+async function handleR2FileSelectChange() {
+    const fileName = r2FileSelect.value;
+    if (!fileName) {
+        filePreview.value = '';
+        return;
+    }
+    try {
+        filePreview.value = "Loading preview...";
+        // 调用新的文件预览 API
+        const data = await fetchAPI(`${API_BASE_PATH}/file-preview/${fileName}`);
+        filePreview.value = data.preview;
+    } catch(e) {
+        filePreview.value = `Error loading preview: ${e.message}`;
+        console.error("Failed to load file preview");
+    }
+}
+
+/**
+ * 新增：当用户点击“Analyze File”按钮时，调用 LLM 分析并显示结果
+ */
+async function handleAnalyzeFileClick() {
+    const fileName = r2FileSelect.value;
+    if (!fileName) {
+        alert("Please select a file from the R2 list first.");
+        return;
+    }
+    analyzeFileBtn.setAttribute('aria-busy', 'true');
+    schemaSuggestionArea.innerHTML = '';
+    importBtn.style.display = 'none';
+
+    try {
+        // 调用新的文件分析 API
+        const { tableName, sql } = await fetchAPI(`${API_BASE_PATH}/analyze-file`, {
+            method: 'POST',
+            body: JSON.stringify({ fileName })
+        });
+
+        // 动态创建可编辑的表单
+        schemaSuggestionArea.innerHTML = `
+            <p><strong>Suggested Schema:</strong></p>
+            <input type="text" id="import-table-name" value="${tableName}" placeholder="Table Name">
+            <textarea id="import-schema-sql" style="height: 150px;">${sql}</textarea>
+        `;
+        importBtn.style.display = 'block'; // 显示“确认导入”按钮
+
+    } catch(e) {
+        alert(`Analysis failed: ${e.message}`);
+        console.error("File analysis failed");
+    } finally {
+        analyzeFileBtn.removeAttribute('aria-busy');
+    }
+}
         
         // --- Initialization ---
         function init() {
@@ -236,6 +296,14 @@
             fileUploadInput.addEventListener('change', handleFileSelected);
             uploadBtn.addEventListener('click', handleUploadClick);
             // (Other button listeners would go here)
+
+==========================================================
+    // THE FIX IS HERE: Binding the new event listeners
+    // ==========================================================
+    r2FileSelect.addEventListener('change', handleR2FileSelectChange);
+    analyzeFileBtn.addEventListener('click', handleAnalyzeFileClick);
+
+            
             loadInitialTree();
         }
 
