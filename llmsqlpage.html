@@ -61,7 +61,7 @@
                     </div>
                 </article>
 
-                <article id="import-tab">
+<article id="import-tab">
                     <div class="import-target-bar">Importing to TableSet: <strong id="import-target-display">None Selected</strong></div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                         <div>
@@ -73,8 +73,10 @@
                         </div>
                         <div>
                             <label for="file-preview"><strong>2. Preview File & Analyze</strong></label>
-                            <textarea id="file-preview" readonly placeholder="File preview will show here..." style="height: 200px;"></textarea>
+                            <textarea id="file-preview" readonly placeholder="Select a file from the list to preview..." style="height: 200px;"></textarea>
                             <button id="analyze-file-btn" style="width: 100%; margin-top: 1rem;">Analyze File</button>
+                            <div id="schema-suggestion-area" style="margin-top: 1rem;"></div> 
+                            <button id="import-btn" class="contrast" style="width: 100%; margin-top: 1rem; display: none;">Confirm & Import</button>
                         </div>
                     </div>
                 </article>
