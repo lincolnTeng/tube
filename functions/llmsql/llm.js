@@ -31,7 +31,7 @@ Rules:
 export async function invokeLLM(apiKey="somekey", task, context) {
   
     if (!apiKey) throw new Error("Missing GEMINI_API_KEY");
-    apiKey = "AIzaSyANt1u2jvWUgTVOVezTVnf1gIaxH8_x_xg";
+   //// apiKey = "AIzaSyANt1u2jvWUgTVOVezTVnf1gIaxH8_x_xg";
   
     const prompt = buildPrompt(task, context);
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
